@@ -1,0 +1,206 @@
+{% extends "core/base.html" %}
+{% block title %}Sign In — NDC Registry{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-64px)] flex">
+
+    <!-- ── Left panel — President Mahama photo ── -->
+    <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+
+        <!-- John Mahama photo (Wikimedia Commons, public domain) -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/John_Mahama.png/800px-John_Mahama.png"
+             alt="H.E. John Dramani Mahama, President of Ghana"
+             class="absolute inset-0 w-full h-full object-cover object-top animate-fade-in"
+             onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/John_Dramani_Mahama_2014_%28cropped%29.jpg/800px-John_Dramani_Mahama_2014_%28cropped%29.jpg'"/>
+
+        <!-- NDC flag-inspired gradient overlay: green bottom-fade, subtle red accent -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1a3d0a]/95 via-[#1a3d0a]/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#1a3d0a]/30 to-transparent"></div>
+
+        <!-- NDC red top accent bar -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#c8102e] via-[#c8102e] to-[#2d5a27]"></div>
+
+        <!-- Decorative blobs -->
+        <div class="absolute top-16 right-8 w-48 h-48 bg-[#2d5a27]/15 blob animate-float"></div>
+        <div class="absolute bottom-32 right-16 w-28 h-28 bg-[#c8102e]/10 blob animate-float delay-400"></div>
+
+        <!-- Bottom content overlay -->
+        <div class="absolute bottom-0 left-0 right-0 z-10 px-10 py-10 animate-slide-left delay-200">
+
+            <!-- NDC umbrella-inspired icon badge -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-12 h-12 rounded-2xl bg-[#c8102e] flex items-center justify-center shadow-xl shrink-0">
+                    <!-- Umbrella SVG (NDC symbol) -->
+                    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.5 2 2 6.27 2 11.5c0 .28.02.55.05.83L3 12h18l.95-.67c.03-.28.05-.55.05-.83C22 6.27 17.5 2 12 2zm0 2c4.07 0 7.44 2.67 8.58 6.33C18.78 8.5 15.57 7 12 7s-6.78 1.5-8.58 3.33C4.56 6.67 7.93 4 12 4zm-1 10v6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14h-3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-[#c8102e] uppercase tracking-widest">National Democratic Congress</p>
+                    <p class="text-[10px] text-white/50 uppercase tracking-wider">Unity · Stability · Development</p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-extrabold text-white leading-tight mb-2">
+                NDC Registry
+            </h2>
+            <p class="text-sm text-white/70 mb-6 max-w-xs leading-relaxed">
+                Official membership management system for the NDC Damongo Community — keeping our party strong and organised.
+            </p>
+
+            <!-- Feature list -->
+            <div class="flex flex-col gap-2.5">
+                <div class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <span class="text-sm text-white/75">Member registration &amp; management</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <span class="text-sm text-white/75">Polling station assignment</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <span class="text-sm text-white/75">Role-based access control</span>
+                </div>
+            </div>
+
+            <!-- President caption -->
+            <div class="mt-6 pt-5 border-t border-white/10">
+                <p class="text-xs text-white/40 uppercase tracking-widest">Under the leadership of</p>
+                <p class="text-sm font-bold text-white mt-0.5">H.E. John Dramani Mahama</p>
+                <p class="text-xs text-[#95c98d]/70">President of the Republic of Ghana</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Right panel — login form ── -->
+    <div class="flex-1 flex items-center justify-center px-6 py-12 bg-[#f0f0c8]">
+        <div class="w-full max-w-sm animate-slide-right">
+
+            <!-- Mobile header (< lg only) -->
+            <div class="text-center mb-8 lg:hidden animate-fade-up">
+                <div class="w-16 h-16 rounded-2xl bg-[#c8102e] flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.5 2 2 6.27 2 11.5c0 .28.02.55.05.83L3 12h18l.95-.67c.03-.28.05-.55.05-.83C22 6.27 17.5 2 12 2zm0 2c4.07 0 7.44 2.67 8.58 6.33C18.78 8.5 15.57 7 12 7s-6.78 1.5-8.58 3.33C4.56 6.67 7.93 4 12 4zm-1 10v6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14h-3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-xl font-extrabold text-[#2d5a27]">NDC Registry</h1>
+                <p class="text-xs text-[#2d5a27]/50 mt-1 uppercase tracking-widest">National Democratic Congress</p>
+            </div>
+
+            <!-- NDC colour strip -->
+            <div class="flex h-1.5 rounded-full overflow-hidden mb-8 animate-fade-up">
+                <div class="flex-1 bg-[#c8102e]"></div>
+                <div class="flex-1 bg-white border-y border-[#95c98d]/30"></div>
+                <div class="flex-1 bg-[#2d5a27]"></div>
+                <div class="flex-1 bg-black"></div>
+            </div>
+
+            <div class="mb-6 animate-fade-up delay-100">
+                <h2 class="text-2xl font-bold text-[#2d5a27]">Welcome back</h2>
+                <p class="text-sm text-[#2d5a27]/60 mt-1">Sign in to access the NDC Registry</p>
+            </div>
+
+            <!-- Login card -->
+            <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-lg overflow-hidden animate-scale-in delay-150">
+
+                <!-- Card top accent: NDC red -->
+                <div class="h-1 bg-gradient-to-r from-[#c8102e] via-[#c8102e] to-[#2d5a27]"></div>
+
+                <form method="post" class="px-6 py-7 space-y-5"
+                      x-data="{ loading: false }" @submit="loading = true">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700
+                                flex items-center gap-2 animate-fade-up">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Invalid username or password. Please try again.
+                    </div>
+                    {% endif %}
+
+                    <!-- Username -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide">Username</label>
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6aaa64]"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <input type="text" name="username" autocomplete="username" autofocus
+                                   value="{{ form.username.value|default:'' }}"
+                                   placeholder="Enter your username"
+                                   class="w-full pl-10 pr-4 py-3 text-sm border border-[#95c98d]/50 rounded-xl
+                                          focus:outline-none bg-[#f0f0c8] transition-all duration-200
+                                          hover:border-[#6aaa64] placeholder-[#2d5a27]/30"/>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-1.5" x-data="{ show: false }">
+                        <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide">Password</label>
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6aaa64]"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <input :type="show ? 'text' : 'password'" name="password"
+                                   autocomplete="current-password"
+                                   placeholder="Enter your password"
+                                   class="w-full pl-10 pr-10 py-3 text-sm border border-[#95c98d]/50 rounded-xl
+                                          focus:outline-none bg-[#f0f0c8] transition-all duration-200
+                                          hover:border-[#6aaa64] placeholder-[#2d5a27]/30"/>
+                            <button type="button" @click="show = !show"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-[#6aaa64]
+                                           hover:text-[#2d5a27] transition-colors">
+                                <svg x-show="!show" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <svg x-show="show" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit"
+                            class="w-full py-3 bg-[#c8102e] text-white text-sm font-bold rounded-xl
+                                   hover:bg-[#a00d25] active:scale-95 transition-all duration-200 shadow-md
+                                   flex items-center justify-center gap-2 btn-press mt-2">
+                        <span x-show="!loading">Sign In</span>
+                        <span x-show="loading" x-cloak class="flex items-center gap-2">
+                            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                            Signing in…
+                        </span>
+                    </button>
+
+                </form>
+            </div>
+
+            <p class="text-center text-xs text-[#2d5a27]/40 mt-6">
+                &copy; {% now "Y" %} NDC Damongo Community · All rights reserved.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

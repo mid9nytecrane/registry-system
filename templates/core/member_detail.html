@@ -1,0 +1,123 @@
+{% extends "core/base.html" %}
+{% block title %}{{ member.first_name }} {{ member.last_name }} — Political Registry{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-[#2d5a27]/50 mb-6 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-[#6aaa64]">Dashboard</a>
+        <span>/</span>
+        <a href="{% url 'member_list' %}" class="hover:text-[#6aaa64]">Members</a>
+        <span>/</span>
+        <span class="text-[#2d5a27]">{{ member.first_name }} {{ member.last_name }}</span>
+    </nav>
+
+    <!-- Profile card -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm overflow-hidden mb-6 animate-fade-up delay-100">
+        <div class="h-24 bg-gradient-to-r from-[#2d5a27] via-[#3d7a35] to-[#6aaa64] relative overflow-hidden">
+            <!-- decorative circles -->
+            <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blob"></div>
+            <div class="absolute top-2 right-20 w-12 h-12 rounded-full bg-white/5 blob"></div>
+        </div>
+        <div class="px-6 mt-10 pb-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-10 mb-5">
+                <div class="flex items-end gap-4">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#2d5a27] to-[#6aaa64]
+                                border-4 border-white shadow-xl flex items-center justify-center shrink-0">
+                        <span class="text-2xl font-extrabold text-white">{{ member.first_name.0|upper }}{{ member.last_name.0|upper }}</span>
+                    </div>
+                    <div class="pb-1">
+                        <h1 class="text-xl font-bold text-[#2d5a27]">{{ member.first_name }} {{ member.last_name }}</h1>
+                        <p class="text-xs font-mono text-[#2d5a27]/50">ID: {{ member.member_id }}</p>
+                    </div>
+                </div>
+                {% if user.is_staff %}
+                <a href="{% url 'member_edit' member.pk %}"
+                   class="px-4 py-2 text-sm font-medium bg-[#6aaa64] text-white rounded-lg hover:bg-[#2d5a27] transition-colors">
+                    Edit Member
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 border-t border-[#95c98d]/30 pt-5">
+
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Full Name</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.first_name }} {{ member.last_name }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Gender</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.get_gender_display|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Date of Birth</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.date_of_birth|date:"F j, Y"|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Phone Number</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.phone|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Ghana Card / Voter ID</p>
+                    <p class="text-sm font-mono font-medium text-[#2d5a27]">{{ member.ghana_card_id|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Membership ID</p>
+                    <p class="text-sm font-mono font-medium text-[#2d5a27]">{{ member.member_id|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Occupation</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.occupation|default:"—" }}</p>
+                </div>
+
+                <div class="">
+                    <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Home Address</p>
+                    <p class="text-sm font-medium text-[#2d5a27]">{{ member.address|default:"—" }}</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Polling Station card -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm p-6 mb-6 animate-fade-up delay-200 card-hover">
+        <h2 class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4">Polling Station</h2>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-[#6aaa64]/15 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#6aaa64]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-[#2d5a27]">{{ member.polling_station.name }}</p>
+                    <p class="text-xs text-[#2d5a27]/50">{{ member.polling_station.location|default:"" }}</p>
+                </div>
+            </div>
+            <a href="{% url 'station_detail' member.polling_station.pk %}" class="text-xs text-[#6aaa64] hover:underline font-medium">View Station →</a>
+        </div>
+    </div>
+
+    <!-- Registration meta -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm p-6 animate-fade-up delay-300">
+        <h2 class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4">Registration Info</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Date Registered</p>
+                <p class="font-medium text-[#2d5a27]">{{ member.date_registered|date:"F j, Y"|default:"—" }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Registered By</p>
+                <p class="font-medium text-[#2d5a27]">{{ member.registered_by|default:"—" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'member_list' %}" class="text-sm text-[#2d5a27]/50 hover:text-[#6aaa64] transition-colors">← Back to Members</a>
+    </div>
+
+</div>
+{% endblock content %}

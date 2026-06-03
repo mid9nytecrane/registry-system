@@ -1,0 +1,23 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Auth
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # Dashboard
+    path('', views.home_view, name='home'),
+
+    # Members
+    path('members/', views.member_list_view, name='member_list'),
+    path('members/register/', views.member_create_view, name='member_create'),
+    path('members/<int:pk>/', views.member_detail_view, name='member_detail'),
+    path('members/<int:pk>/edit/', views.member_edit_view, name='member_edit'),
+
+    # Polling Stations
+    path('stations/', views.station_list_view, name='station_list'),
+    path('stations/add/', views.station_create_view, name='station_create'),
+    path('stations/<int:pk>/', views.station_detail_view, name='station_detail'),
+    path('stations/<int:pk>/edit/', views.station_edit_view, name='station_edit'),
+]

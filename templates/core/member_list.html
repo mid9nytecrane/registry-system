@@ -1,0 +1,130 @@
+{% extends "core/base.html" %}
+{% block title %}Members — Political Registry{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-up">
+        <div>
+            <h1 class="text-2xl font-bold text-[#2d5a27]">Party Members</h1>
+            <p class="text-sm text-[#2d5a27]/60 mt-1">All registered members and their polling stations</p>
+        </div>
+        <a href="{% url 'member_create' %}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-xl
+                  hover:bg-[#6aaa64] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md btn-press">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Register Member
+        </a>
+    </div>
+
+    <!-- Search & Filter bar -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3 animate-fade-up delay-100 shadow-sm">
+        <form method="get" class="flex flex-col sm:flex-row gap-3 w-full">
+        <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d5a27]/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+            </svg>
+            <input type="text" name="q" value="{{ q }}" placeholder="Search by name or ID…"
+                   class="w-full pl-9 pr-4 py-2 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+        </div>
+        <select name="station" onchange="this.form.submit()"
+                class="px-3 py-2 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] text-[#2d5a27]">
+            <option value="">All Stations</option>
+            {% for station in stations %}
+            <option value="{{ station.pk }}" {% if selected_station == station.pk|stringformat:"s" %}selected{% endif %}>{{ station.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit"
+                class="px-4 py-2 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-lg hover:bg-[#6aaa64] transition-colors">
+            Search
+        </button>
+        </form>
+    </div>
+
+    <!-- Members table -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm overflow-hidden animate-fade-up delay-200">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#2d5a27] text-[#f0f0c8] text-xs uppercase tracking-wide">
+                        <th class="px-5 py-3 text-left font-semibold">Member</th>
+                        <th class="px-5 py-3 text-left font-semibold hidden sm:table-cell">Member ID</th>
+                        <th class="px-5 py-3 text-left font-semibold hidden md:table-cell">Polling Station</th>
+                        <th class="px-5 py-3 text-left font-semibold hidden lg:table-cell">Phone</th>
+                        <th class="px-5 py-3 text-left font-semibold hidden lg:table-cell">Registered</th>
+                        <th class="px-5 py-3 text-right font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#95c98d]/30">
+                    {% for member in members %}
+                    <tr class="hover:bg-[#f0f0c8]/60 transition-all duration-150 cursor-pointer">
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d5a27] to-[#6aaa64] flex items-center justify-center shrink-0 shadow-sm">
+                                    <span class="text-[11px] font-bold text-[#f0f0c8]">{{ member.first_name.0|upper }}{{ member.last_name.0|upper }}</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-[#2d5a27]">{{ member.first_name }} {{ member.last_name }}</p>
+                                    <p class="text-xs text-[#2d5a27]/50 md:hidden">{{ member.polling_station.name }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3 hidden sm:table-cell text-[#2d5a27]/60 font-mono text-xs">{{ member.member_id }}</td>
+                        <td class="px-5 py-3 hidden md:table-cell">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#6aaa64]/15 text-[#2d5a27] text-xs font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#6aaa64]"></span>
+                                {{ member.polling_station.name }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3 hidden lg:table-cell text-[#2d5a27]/60">{{ member.phone|default:"—" }}</td>
+                        <td class="px-5 py-3 hidden lg:table-cell text-[#2d5a27]/40 text-xs">{{ member.date_registered|date:"M d, Y" }}</td>
+                        <td class="px-5 py-3 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{% url 'member_detail' member.pk %}"
+                                   class="px-3 py-1.5 text-xs font-medium text-[#2d5a27] border border-[#6aaa64] rounded hover:bg-[#2d5a27] hover:text-[#f0f0c8] transition-colors">
+                                    View
+                                </a>
+                                {% if user.is_staff %}
+                                <a href="{% url 'member_edit' member.pk %}"
+                                   class="px-3 py-1.5 text-xs font-medium text-[#6aaa64] border border-[#95c98d] rounded hover:bg-[#6aaa64] hover:text-white transition-colors">
+                                    Edit
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-5 py-14 text-center">
+                            <svg class="w-10 h-10 mx-auto mb-3 text-[#2d5a27]/20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <p class="text-sm text-[#2d5a27]/40">No members found.</p>
+                            <a href="{% url 'member_create' %}" class="mt-2 inline-block text-sm text-[#6aaa64] hover:underline">Register the first member →</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_paginated %}
+        <div class="flex items-center justify-between px-5 py-3 border-t border-[#95c98d]/30 bg-[#f0f0c8]/40 text-xs text-[#2d5a27]/60">
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 border border-[#95c98d]/50 rounded hover:bg-white transition-colors">← Prev</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1.5 border border-[#95c98d]/50 rounded hover:bg-white transition-colors">Next →</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock content %}

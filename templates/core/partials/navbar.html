@@ -1,0 +1,113 @@
+<nav class="w-full bg-[#2d5a27] sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto max-w-7xl px-6 py-3.5">
+        <div class="flex items-center justify-between">
+
+            <!-- Logo & Brand -->
+            <a href="{% url 'home' %}" class="flex items-center gap-3 select-none group">
+                <div class="w-10 h-10 rounded-xl bg-[#6aaa64] flex items-center justify-center shrink-0 shadow-md
+                            group-hover:scale-110 group-hover:bg-[#95c98d] transition-all duration-300 animate-pulse-ring">
+                    <!-- Ballot / registry icon -->
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-sm font-extrabold text-[#f0f0c8] tracking-tight group-hover:text-white transition-colors">NDC Registry</span>
+                    <span class="text-[10px] font-semibold text-[#95c98d]/80 uppercase tracking-widest hidden sm:block">National Democratic Congress</span>
+                </div>
+            </a>
+
+            <!-- Center Navigation -->
+            {% if user.is_authenticated %}
+            <div class="hidden md:flex items-center gap-1 flex-1 justify-center">
+                {% with request.resolver_match.url_name as url_name %}
+                <a href="{% url 'home' %}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          {% if url_name == 'home' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
+                    Dashboard
+                </a>
+                <a href="{% url 'station_list' %}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          {% if url_name == 'station_list' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
+                    Stations
+                </a>
+                <a href="{% url 'member_list' %}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          {% if url_name == 'member_list' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
+                    Members
+                </a>
+                {% if user.is_staff %}
+                <a href="/admin/"
+                   class="px-4 py-2 rounded-lg text-sm font-medium text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-all duration-200">
+                    Admin
+                </a>
+                {% endif %}
+                {% endwith %}
+            </div>
+            {% endif %}
+
+            <!-- Right side -->
+            <div class="flex items-center gap-3">
+                {% if user.is_authenticated %}
+                    <div class="hidden sm:flex items-center gap-3 border-r border-[#6aaa64]/40 pr-3">
+                        <!-- Avatar circle -->
+                        <div class="w-8 h-8 rounded-full bg-[#6aaa64] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                            {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-xs text-[#f0f0c8] font-medium leading-tight">{{ user.get_full_name|default:user.username }}</span>
+                            {% if user.is_staff %}
+                            <span class="text-[10px] text-[#95c98d] font-semibold">Administrator</span>
+                            {% else %}
+                            <span class="text-[10px] text-[#6aaa64] font-semibold">Member</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'logout' %}"
+                       class="px-4 py-2 text-sm font-medium text-[#2d5a27] bg-[#95c98d] rounded-lg
+                              hover:bg-[#f0f0c8] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">
+                        Sign Out
+                    </a>
+                {% else %}
+                    <a href="#"
+                       class="px-4 py-2 text-sm font-medium text-white bg-[#6aaa64] rounded-lg
+                              hover:bg-[#95c98d] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">
+                        Sign In
+                    </a>
+                {% endif %}
+
+                <!-- Mobile hamburger -->
+                {% if user.is_authenticated %}
+                <button x-data @click="$dispatch('toggle-mobile-nav')"
+                        class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-[#95c98d] hover:bg-[#6aaa64]/20 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Mobile nav drawer -->
+        {% if user.is_authenticated %}
+        <div x-data="{ open: false }" @toggle-mobile-nav.window="open = !open"
+             x-show="open" x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             x-cloak
+             class="md:hidden py-3 border-t border-[#6aaa64]/30 mt-3 flex flex-col gap-1">
+            <a href="{% url 'home' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Dashboard</a>
+            <a href="{% url 'station_list' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Stations</a>
+            <a href="{% url 'member_list' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Members</a>
+            {% if user.is_staff %}
+            <a href="/admin/" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Admin Panel</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</nav>
