@@ -170,6 +170,7 @@ def member_edit_view(request, pk):
             member.occupation = request.POST.get('occupation', '').strip()
             member.address = request.POST.get('address', '').strip()
             member.ghana_card_id = request.POST.get('ghana_card_id', '').strip()
+            member.member_id = request.POST.get('membership_id', '').strip()
             member.polling_station = station
             member.save()
 

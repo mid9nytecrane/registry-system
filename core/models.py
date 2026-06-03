@@ -1,7 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 import uuid
+
+
+
+# validation for member_id entry
+def validate_member_id(value):
+    if value < 10 or value > 10:
+        raise ValidationError(f"{value} is either less or more")
+
 
 
 class PollingStation(models.Model):
@@ -29,7 +38,7 @@ class PartyMember(models.Model):
     ]
 
     # Auto-generated unique member ID
-    member_id = models.CharField(max_length=20, unique=True, editable=True)
+    member_id = models.CharField(max_length=20, unique=True, editable=True, validators=[validate_member_id])
 
     first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
