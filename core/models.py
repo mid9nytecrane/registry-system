@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 import uuid
 
 
@@ -32,30 +33,22 @@ def validation_voter_id(value):
 
 def validation_phone_no(value):
     if len(value) != 10:
-        raise ValidationError(
-            'Phone Number is less than 10 digits'
-        )
+        raise ValidationError('Phone Number must be exactly 10 digits.')
     
     if not value.isdigit():
-        raise ValidationError(
-            'phone number should be digits only'
-        )
+        raise ValidationError('Phone number should be digits only.')
     
-    if not (value.startswith(0, '0')):
-        raise ValidationError(
-            'phone begins with "0" '
-        )
+    # Correct usage:
+    if not (value.startswith('0')):
+        raise ValidationError('Phone number must begin with "0".')
     
-def validation_ghana_card(value):
-    if len(value) != 15: 
-        raise ValidationError(
-            'Ghana card number is invalid. Check your number of characters'
-        )
+validation_ghana_card = RegexValidator(
+    regex='^GHA-\d{9}-\d$',
+    message='Ghana Card must be in the forma GHA-XXXXXXXX-X',
+    code='Invalid_ghana_card'
+)
+
     
-    if not (value.startswith('GHA')):
-        raise ValidationError(
-            'Invalid entry'
-        )
 
 
 

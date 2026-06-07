@@ -83,7 +83,7 @@ class PartyMemberForm(forms.ModelForm):
         self.fields['phone'].required = False
         self.fields['occupation'].required = False
         self.fields['address'].required = False
-        self.fields['ghana_card_id'].required = True
+        self.fields['ghana_card_id'].required = False
         self.fields['member_id'].required = True
         self.fields['voters_id'].required = True
         self.fields['date_registered'].required = False
