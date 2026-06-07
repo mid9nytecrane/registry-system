@@ -153,8 +153,15 @@ def member_edit_view(request, pk):
 
 @login_required
 def station_list_view(request):
+
+    query = request.GET.get("q", "").strip()
     stations = PollingStation.objects.all()
-    return render(request, 'core/station_list.html', {'stations': stations})
+    if query:
+        stations = stations.filter(
+            Q(name__icontains=query) | Q(location__icontains=query)
+        )
+   
+    return render(request, 'core/station_list.html', {'stations': stations, 'query':query})
 
 
 @login_required
@@ -212,3 +219,91 @@ def station_edit_view(request, pk):
             return redirect('station_detail', pk=station.pk)
 
     return render(request, 'core/station_form.html', {'station': station})
+
+
+# ─────────────────────────────────────────
+#  Admin Dashboard
+# ─────────────────────────────────────────
+
+@login_required
+def admin_dashboard_view(request):
+    """Custom admin panel — staff only. Superusers access Django /admin/."""
+    if not request.user.is_staff:
+        messages.error(request, 'You do not have permission to access the admin panel.')
+        return redirect('home')
+
+    now = timezone.now()
+
+    # Aggregate stats
+    total_members    = PartyMember.objects.count()
+    total_stations   = PollingStation.objects.count()
+    new_this_month   = PartyMember.objects.filter(
+        date_registered__year=now.year,
+        date_registered__month=now.month,
+    ).count()
+    male_count       = PartyMember.objects.filter(gender='M').count()
+    female_count     = PartyMember.objects.filter(gender='F').count()
+
+    # All users except superusers (they manage themselves via Django admin)
+    from django.contrib.auth.models import User
+    users = User.objects.filter(is_superuser=False).order_by('-date_joined')
+
+    # Recent registrations
+    recent_members = (
+        PartyMember.objects
+        .select_related('polling_station', 'registered_by')
+        .order_by('-date_registered')[:10]
+    )
+
+    # Stations with member counts
+    stations = PollingStation.objects.all()
+
+    return render(request, 'core/admin_dashboard.html', {
+        'total_members':  total_members,
+        'total_stations': total_stations,
+        'new_this_month': new_this_month,
+        'male_count':     male_count,
+        'female_count':   female_count,
+        'users':          users,
+        'recent_members': recent_members,
+        'stations':       stations,
+    })
+
+
+@login_required
+def admin_user_toggle_view(request, user_id):
+    """Toggle a user's is_staff status — superuser only."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Only the master administrator can change user roles.')
+        return redirect('admin_dashboard')
+
+    from django.contrib.auth.models import User
+    user = get_object_or_404(User, pk=user_id)
+    if user == request.user:
+        messages.error(request, 'You cannot change your own role.')
+        return redirect('admin_dashboard')
+
+    user.is_staff = not user.is_staff
+    user.save()
+    role = 'Administrator' if user.is_staff else 'Member'
+    messages.success(request, f'{user.get_full_name() or user.username} is now a {role}.')
+    return redirect('admin_dashboard')
+
+
+@login_required
+def admin_user_delete_view(request, user_id):
+    """Delete a user account — superuser only."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Only the master administrator can delete users.')
+        return redirect('admin_dashboard')
+
+    from django.contrib.auth.models import User
+    user = get_object_or_404(User, pk=user_id)
+    if user == request.user:
+        messages.error(request, 'You cannot delete your own account.')
+        return redirect('admin_dashboard')
+
+    name = user.get_full_name() or user.username
+    user.delete()
+    messages.success(request, f'User "{name}" has been deleted.')
+    return redirect('admin_dashboard')

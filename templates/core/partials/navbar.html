@@ -37,9 +37,16 @@
                     Members
                 </a>
                 {% if user.is_staff %}
-                <a href="/admin/"
-                   class="px-4 py-2 rounded-lg text-sm font-medium text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-all duration-200">
+                <a href="{% url 'admin_dashboard' %}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          {% if url_name == 'admin_dashboard' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
                     Admin
+                </a>
+                {% endif %}
+                {% if user.is_superuser %}
+                <a href="/admin/"
+                   class="px-4 py-2 rounded-lg text-sm font-medium text-[#c8102e]/80 hover:text-[#f0f0c8] hover:bg-[#c8102e]/20 transition-all duration-200">
+                    Django Admin
                 </a>
                 {% endif %}
                 {% endwith %}
@@ -104,7 +111,10 @@
             <a href="{% url 'station_list' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Stations</a>
             <a href="{% url 'member_list' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Members</a>
             {% if user.is_staff %}
-            <a href="/admin/" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Admin Panel</a>
+            <a href="{% url 'admin_dashboard' %}" class="px-3 py-2 rounded-lg text-sm text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20 transition-colors">Admin Panel</a>
+            {% endif %}
+            {% if user.is_superuser %}
+            <a href="/admin/" class="px-3 py-2 rounded-lg text-sm text-[#c8102e]/80 hover:text-[#f0f0c8] hover:bg-[#c8102e]/20 transition-colors">Django Admin</a>
             {% endif %}
         </div>
         {% endif %}

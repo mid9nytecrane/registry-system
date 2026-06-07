@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.RestrictDjangoAdminMiddleware',  # blocks /admin/ for non-superusers
 ]
 
 ROOT_URLCONF = 'RegisterApp.urls'

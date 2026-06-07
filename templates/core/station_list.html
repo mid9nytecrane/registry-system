@@ -21,6 +21,25 @@
         {% endif %}
     </div>
 
+    <!-- Search & Filter bar -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3 animate-fade-up delay-100 shadow-sm">
+        <form method="get" class="flex flex-col sm:flex-row gap-3 w-full">
+        <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d5a27]/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+            </svg>
+            <input type="text" name="q" value="{{ q }}" placeholder="Search by name or location"
+                   class="w-full pl-9 pr-4 py-2 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+        </div>
+        
+        <button type="submit"
+                class="px-4 py-2 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-lg hover:bg-[#6aaa64] transition-colors">
+            Search
+        </button>
+        </form>
+    </div>
+
+
     {% if stations %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {% for station in stations %}
