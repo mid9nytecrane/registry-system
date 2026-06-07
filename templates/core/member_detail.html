@@ -64,6 +64,9 @@
                 </div>
                 <div>
                     <p class="text-xs text-[#2d5a27]/40 uppercase tracking-wide font-semibold mb-1">Membership ID</p>
+                    {% if error %}
+                        <p class='text-sm text-red-500 mt-1'>{{ error }}</p>
+                    {% endif %}
                     <p class="text-sm font-mono font-medium text-[#2d5a27]">{{ member.member_id|default:"—" }}</p>
                 </div>
                 <div>

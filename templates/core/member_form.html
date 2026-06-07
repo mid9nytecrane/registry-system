@@ -1,9 +1,10 @@
 {% extends "core/base.html" %}
-{% block title %}{% if member %}Edit Member{% else %}Register Member{% endif %} — Political Registry{% endblock %}
+{% block title %}{% if member %}Edit Member{% else %}Register Member{% endif %} — NDC Registry{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto px-6 py-10">
 
+    <!-- Breadcrumb -->
     <nav class="text-xs text-[#2d5a27]/50 mb-6 flex items-center gap-1.5">
         <a href="{% url 'home' %}" class="hover:text-[#6aaa64]">Dashboard</a>
         <span>/</span>
@@ -14,127 +15,191 @@
 
     <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm overflow-hidden animate-scale-in">
 
+        <!-- Header -->
         <div class="bg-gradient-to-r from-[#2d5a27] to-[#3d7a35] px-6 py-6">
             <h1 class="text-lg font-bold text-[#f0f0c8]">
                 {% if member %}Edit Member Record{% else %}Register New Member{% endif %}
             </h1>
             <p class="text-xs text-[#95c98d] mt-1">
-                {% if member %}Update the information for {{ member.first_name }} {{ member.last_name }}{% else %}Fill in the details to add a new party member{% endif %}
+                {% if member %}Update the information for {{ member.first_name }} {{ member.last_name }}
+                {% else %}Fill in the details to add a new party member{% endif %}
             </p>
         </div>
 
         <form method="post" class="px-6 py-6 space-y-6">
             {% csrf_token %}
 
-            <!-- Personal Information -->
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+            <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- ── Personal Information ── -->
             <fieldset>
-                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">Personal Information</legend>
+                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">
+                    Personal Information
+                </legend>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+                    <!-- First Name -->
                     <div>
-                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">First Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="first_name" value="{{ member.first_name|default:'' }}" required
-                               placeholder="e.g. Kwame"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                            First Name <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
                     </div>
 
+                    <!-- Last Name -->
                     <div>
-                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Last Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="last_name" value="{{ member.last_name|default:'' }}" required
-                               placeholder="e.g. Asante"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                            Last Name <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
                     </div>
 
+                    <!-- Middle Name -->
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Middle Name</label>
-                        <input type="text" name="middle_name" value="{{ member.middle_name|default:'' }}"
-                               placeholder="e.g. Boateng"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Gender <span class="text-red-500">*</span></label>
-                        <select name="gender" required
-                                class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]">
-                            <option value="">Select gender…</option>
-                            <option value="M" {% if member.gender == 'M' %}selected{% endif %}>Male</option>
-                            <option value="F" {% if member.gender == 'F' %}selected{% endif %}>Female</option>
-                        </select>
+                        {{ form.middle_name }}
                     </div>
 
+                    <!-- Gender -->
+                    <div>
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Gender</label>
+                        {{ form.gender }}
+                        {% if form.gender.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.gender.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Date of Birth -->
                     <div>
                         <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Date of Birth</label>
-                        <input type="date" name="date_of_birth" value="{{ member.date_of_birth|date:'Y-m-d'|default:'' }}"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        {{ form.date_of_birth }}
                     </div>
 
+                    <!-- Phone -->
                     <div>
                         <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Phone Number</label>
-                        <input type="tel" name="phone" value="{{ member.phone|default:'' }}"
-                               placeholder="e.g. 0244123456"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        {{ form.phone }}
                     </div>
 
+                    <!-- Occupation -->
                     <div>
                         <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Occupation</label>
-                        <input type="text" name="occupation" value="{{ member.occupation|default:'' }}"
-                               placeholder="e.g. Farmer"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        {{ form.occupation }}
                     </div>
 
+                    <!-- Address -->
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Home Address</label>
-                        <input type="text" name="address" value="{{ member.address|default:'' }}"
-                               placeholder="Area / community / street"
-                               class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                        {{ form.address }}
                     </div>
 
                 </div>
             </fieldset>
 
-            <!-- Identification -->
+            <!-- ── Identification ── -->
             <fieldset>
-                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">Identification</legend>
-                <div>
-                    <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Ghana Card / Voter ID No.</label>
-                    <input type="text" name="ghana_card_id" value="{{ member.ghana_card_id|default:'' }}"
-                           placeholder="e.g. GHA-000000000-0"
-                           class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] font-mono"/>
-                </div>
+                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">
+                    Identification
+                </legend>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                <div>
-                    <label class="block text-xs mt-3 font-semibold text-[#2d5a27]/70 mb-1.5">Membership ID No.</label>
-                    <input type="text" name="membership_id" value="{{ member.ghana_card_id|default:'' }}"
-                           placeholder="e.g. Mxxxxxxxxx"
-                           class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] font-mono"/>
+                    <!-- Ghana Card / Voter ID -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                            Ghana Card No.<span class="text-red-500">*</span>
+                        </label>
+                        {{ form.ghana_card_id }}
+                    </div>
+
+                    <!-- Membership ID -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                            Membership ID No.<span class="text-red-500">*</span>
+                        </label>
+                        {{ form.member_id }}
+                        
+                        {% if form.member_id.errors %}
+                            <p >
+                                <ul class='text-xs text-red-500 mt-1'>
+
+                                    {{form.member_id.errors}}
+                                </ul>
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Voters ID -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                            Voter ID No.<span class="text-red-500">*</span>
+                        </label>
+                        {{ form.voters_id }}
+                        
+                        {% if form.voters_id.errors %}
+                            <p >
+                                <ul class='text-xs text-red-500 mt-1'>
+
+                                    {{form.voters_id.errors}}
+                                </ul>
+                            </p>
+                        {% endif %}
+                    </div>
+
                 </div>
             </fieldset>
 
-            <!-- Polling Station -->
+            <!-- ── Polling Station ── -->
             <fieldset>
-                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">Polling Station</legend>
+                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">
+                    Polling Station
+                </legend>
                 <div>
-                    <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Assigned Polling Station <span class="text-red-500">*</span></label>
-                    <select name="polling_station" required
-                            class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]">
-                        <option value="">Select a station…</option>
-                        {% for station in stations %}
-                        <option value="{{ station.pk }}"
-                            {% if member.polling_station_id == station.pk %}selected
-                            {% elif not member and preselected_station == station.pk|stringformat:"s" %}selected
-                            {% endif %}>
-                            {{ station.name }}{% if station.location %} — {{ station.location }}{% endif %}
-                        </option>
-                        {% endfor %}
-                    </select>
+                    <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">
+                        Assigned Polling Station <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.polling_station }}
+                    {% if form.polling_station.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.polling_station.errors.0 }}</p>
+                    {% endif %}
                 </div>
             </fieldset>
 
-            <!-- Actions -->
+            <!-- ── Registration Date (edit only) ── -->
+            {% if member %}
+            <fieldset>
+                <legend class="text-xs font-bold text-[#2d5a27] uppercase tracking-wide mb-4 pb-2 border-b border-[#95c98d]/30 w-full">
+                    Registration
+                </legend>
+                <div>
+                    <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Date Registered</label>
+                    {{ form.date_registered }}
+                </div>
+            </fieldset>
+            {% endif %}
+
+            <!-- ── Actions ── -->
             <div class="flex items-center justify-between pt-4 border-t border-[#95c98d]/30">
-                <a href="{% url 'member_list' %}" class="text-sm text-[#2d5a27]/50 hover:text-[#6aaa64] transition-colors">← Cancel</a>
+                <a href="{% url 'member_list' %}"
+                   class="text-sm text-[#2d5a27]/50 hover:text-[#6aaa64] transition-colors">
+                    ← Cancel
+                </a>
                 <button type="submit"
                         class="px-6 py-2.5 bg-[#2d5a27] text-[#f0f0c8] text-sm font-bold rounded-xl
-                               hover:bg-[#6aaa64] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md btn-press">
+                               hover:bg-[#6aaa64] hover:scale-105 active:scale-95
+                               transition-all duration-200 shadow-md btn-press">
                     {% if member %}Save Changes{% else %}Register Member{% endif %}
                 </button>
             </div>

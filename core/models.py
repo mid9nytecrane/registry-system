@@ -8,8 +8,55 @@ import uuid
 
 # validation for member_id entry
 def validate_member_id(value):
-    if value < 10 or value > 10:
-        raise ValidationError(f"{value} is either less or more")
+    if len(value) != 10:
+        raise ValidationError(
+            'Member ID must be exactly 10 characters long',
+        )
+
+    if not value.startswith(('C', 'M')):
+        raise ValidationError(
+            'Member ID must start with a "C" or "M". '
+        )
+    
+# validation for voters id
+def validation_voter_id(value):
+    if len(value) != 10:
+        raise ValidationError(
+            'Voters ID must be exactly 10 digits long.'
+        )
+    
+    if not value.isdigit():
+        raise ValidationError(
+            'Invalid ID. Enter the correct format'
+        )
+
+def validation_phone_no(value):
+    if len(value) != 10:
+        raise ValidationError(
+            'Phone Number is less than 10 digits'
+        )
+    
+    if not value.isdigit():
+        raise ValidationError(
+            'phone number should be digits only'
+        )
+    
+    if not (value.startswith(0, '0')):
+        raise ValidationError(
+            'phone begins with "0" '
+        )
+    
+def validation_ghana_card(value):
+    if len(value) != 15: 
+        raise ValidationError(
+            'Ghana card number is invalid. Check your number of characters'
+        )
+    
+    if not (value.startswith('GHA')):
+        raise ValidationError(
+            'Invalid entry'
+        )
+
 
 
 
@@ -38,17 +85,34 @@ class PartyMember(models.Model):
     ]
 
     # Auto-generated unique member ID
-    member_id = models.CharField(max_length=20, unique=True, editable=True, validators=[validate_member_id])
+    member_id = models.CharField(
+        max_length=10, 
+        unique=True, 
+        editable=True, 
+        validators=[validate_member_id])
 
     first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField(max_length=10, blank=True, validators=[validation_phone_no])
     occupation = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=200, blank=True)
-    ghana_card_id = models.CharField(max_length=50, blank=True, verbose_name='Ghana Card / Voter ID')
+    ghana_card_id = models.CharField(
+        max_length=15,
+        blank=True, 
+        verbose_name='Ghana Card',
+        validators=[validation_ghana_card]
+
+        )
+    voters_id = models.CharField(
+        max_length=10, 
+        blank=True, 
+        unique=True,
+        verbose_name='Voters ID',
+        validators=[validation_voter_id]
+        )
 
     polling_station = models.ForeignKey(
         PollingStation,

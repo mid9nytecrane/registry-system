@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.db.models import Q
 
 from .models import PartyMember, PollingStation
+from .forms import PartyMemberForm
 
 
 # ─────────────────────────────────────────
@@ -25,14 +26,15 @@ def login_view(request):
             return redirect(request.GET.get('next', 'home'))
         messages.error(request, 'Invalid username or password.')
 
-    # Pass a dummy form-like object so the template can render {{ form.username.value }}
-    class FakeForm:
+    # Minimal form-like object so the template can access {{ form.username.value }}
+    class _FakeForm:
         class username:
             @staticmethod
-            def value(): return request.POST.get('username', '')
+            def value():
+                return request.POST.get('username', '')
         non_field_errors = []
 
-    return render(request, 'core/login.html', {'form': FakeForm()})
+    return render(request, 'core/login.html', {'form': _FakeForm()})
 
 
 def logout_view(request):
@@ -52,7 +54,7 @@ def home_view(request):
     total_stations = PollingStation.objects.count()
     new_this_month = PartyMember.objects.filter(
         date_registered__year=now.year,
-        date_registered__month=now.month
+        date_registered__month=now.month,
     ).count()
     active_stations = PollingStation.objects.filter(members__isnull=False).distinct().count()
 
@@ -73,7 +75,6 @@ def home_view(request):
 def member_list_view(request):
     qs = PartyMember.objects.select_related('polling_station').order_by('-date_registered')
 
-    # Search
     q = request.GET.get('q', '').strip()
     if q:
         qs = qs.filter(
@@ -83,15 +84,13 @@ def member_list_view(request):
             Q(phone__icontains=q)
         )
 
-    # Filter by station
     station_id = request.GET.get('station', '')
     if station_id:
         qs = qs.filter(polling_station_id=station_id)
 
-    stations = PollingStation.objects.all()
     return render(request, 'core/member_list.html', {
         'members': qs,
-        'stations': stations,
+        'stations': PollingStation.objects.all(),
         'q': q,
         'selected_station': station_id,
     })
@@ -105,81 +104,46 @@ def member_detail_view(request, pk):
 
 @login_required
 def member_create_view(request):
-    stations = PollingStation.objects.all()
+    # Pre-select station from query param if provided
+    initial = {}
+    preselected = request.GET.get('station', '')
+    if preselected:
+        initial['polling_station'] = preselected
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-
-        if not first_name or not last_name:
-            messages.error(request, 'First name and last name are required.')
-        else:
-            station_id = request.POST.get('polling_station')
-            station = get_object_or_404(PollingStation, pk=station_id) if station_id else None
-
-            member = PartyMember.objects.create(
-                first_name=first_name,
-                middle_name=request.POST.get('middle_name', '').strip(),
-                last_name=last_name,
-                gender=request.POST.get('gender', ''),
-                date_of_birth=request.POST.get('date_of_birth') or None,
-                phone=request.POST.get('phone', '').strip(),
-                occupation=request.POST.get('occupation', '').strip(),
-                address=request.POST.get('address', '').strip(),
-                ghana_card_id=request.POST.get('ghana_card_id', '').strip(),
-                member_id = request.POST.get('membership_id', '').strip(),
-                polling_station=station,
-                registered_by=request.user,
-            )
+        form = PartyMemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.registered_by = request.user
+            member.save()
             messages.success(request, f'Member {member.first_name} {member.last_name} registered successfully.')
             return redirect('member_detail', pk=member.pk)
+    else:
+        form = PartyMemberForm(initial=initial)
 
-    # Pre-select station if passed as query param
-    preselected_station = request.GET.get('station', '')
-    return render(request, 'core/member_form.html', {
-        'stations': stations,
-        'preselected_station': preselected_station,
-    })
+    return render(request, 'core/member_form.html', {'form': form})
 
 
 @login_required
 def member_edit_view(request, pk):
     member = get_object_or_404(PartyMember, pk=pk)
-    stations = PollingStation.objects.all()
 
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission to edit member records.')
         return redirect('member_detail', pk=pk)
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-
-        if not first_name or not last_name:
-            messages.error(request, 'First name and last name are required.')
-        else:
-            station_id = request.POST.get('polling_station')
-            station = get_object_or_404(PollingStation, pk=station_id) if station_id else None
-
-            member.first_name = first_name
-            member.middle_name = request.POST.get('middle_name', '').strip()
-            member.last_name = last_name
-            member.gender = request.POST.get('gender', '')
-            member.date_of_birth = request.POST.get('date_of_birth') or None
-            member.phone = request.POST.get('phone', '').strip()
-            member.occupation = request.POST.get('occupation', '').strip()
-            member.address = request.POST.get('address', '').strip()
-            member.ghana_card_id = request.POST.get('ghana_card_id', '').strip()
-            member.member_id = request.POST.get('membership_id', '').strip()
-            member.polling_station = station
-            member.save()
-
+        form = PartyMemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
             messages.success(request, 'Member record updated successfully.')
             return redirect('member_detail', pk=member.pk)
+    else:
+        form = PartyMemberForm(instance=member)
 
     return render(request, 'core/member_form.html', {
+        'form': form,
         'member': member,
-        'stations': stations,
     })
 
 
