@@ -1,113 +1,176 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block title %}Sign In — NDC Registry{% endblock %}
 
 {% block content %}
 <div class="min-h-[calc(100vh-64px)] flex">
 
-    <!-- ── Left panel — President Mahama photo ── -->
-    <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+    <!-- ══════════════════════════════════════
+         Left panel — NDC branding
+    ══════════════════════════════════════ -->
+    <div class="hidden lg:flex lg:w-[52%] relative overflow-hidden flex-col">
 
-        <!-- John Mahama photo (Wikimedia Commons, public domain) -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/John_Mahama.png/800px-John_Mahama.png"
-             alt="H.E. John Dramani Mahama, President of Ghana"
-             class="absolute inset-0 w-full h-full object-cover object-top animate-fade-in"
-             onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/John_Dramani_Mahama_2014_%28cropped%29.jpg/800px-John_Dramani_Mahama_2014_%28cropped%29.jpg'"/>
+        <!-- Deep NDC green background -->
+        <div class="absolute inset-0 bg-[#1a3d0a]"></div>
 
-        <!-- NDC flag-inspired gradient overlay: green bottom-fade, subtle red accent -->
-        <div class="absolute inset-0 bg-gradient-to-t from-[#1a3d0a]/95 via-[#1a3d0a]/40 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#1a3d0a]/30 to-transparent"></div>
+        <!-- Subtle diagonal texture overlay -->
+        <div class="absolute inset-0 opacity-[0.04]"
+             style="background-image: repeating-linear-gradient(
+                 45deg,
+                 #ffffff 0px, #ffffff 1px,
+                 transparent 1px, transparent 12px
+             )"></div>
 
-        <!-- NDC red top accent bar -->
-        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#c8102e] via-[#c8102e] to-[#2d5a27]"></div>
+        <!-- NDC 4-colour top bar -->
+        <div class="absolute top-0 left-0 right-0 flex h-2 z-20">
+            <div class="flex-1 bg-[#c8102e]"></div>
+            <div class="flex-1 bg-white"></div>
+            <div class="flex-1 bg-[#2d5a27]"></div>
+            <div class="flex-1 bg-black"></div>
+        </div>
 
-        <!-- Decorative blobs -->
-        <div class="absolute top-16 right-8 w-48 h-48 bg-[#2d5a27]/15 blob animate-float"></div>
-        <div class="absolute bottom-32 right-16 w-28 h-28 bg-[#c8102e]/10 blob animate-float delay-400"></div>
+        <!-- Decorative large circle bg -->
+        <div class="absolute -bottom-32 -right-32 w-[420px] h-[420px] rounded-full
+                    bg-[#2d5a27]/30 blur-3xl"></div>
+        <div class="absolute -top-20 -left-20 w-[300px] h-[300px] rounded-full
+                    bg-[#c8102e]/10 blur-2xl"></div>
 
-        <!-- Bottom content overlay -->
-        <div class="absolute bottom-0 left-0 right-0 z-10 px-10 py-10 animate-slide-left delay-200">
+        <!-- Floating blobs -->
+        <div class="absolute top-24 right-12 w-40 h-40 bg-[#2d5a27]/25 blob animate-float"></div>
+        <div class="absolute bottom-40 left-10 w-24 h-24 bg-[#c8102e]/15 blob animate-float delay-400"></div>
 
-            <!-- NDC umbrella-inspired icon badge -->
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-12 h-12 rounded-2xl bg-[#c8102e] flex items-center justify-center shadow-xl shrink-0">
-                    <!-- Umbrella SVG (NDC symbol) -->
-                    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.5 2 2 6.27 2 11.5c0 .28.02.55.05.83L3 12h18l.95-.67c.03-.28.05-.55.05-.83C22 6.27 17.5 2 12 2zm0 2c4.07 0 7.44 2.67 8.58 6.33C18.78 8.5 15.57 7 12 7s-6.78 1.5-8.58 3.33C4.56 6.67 7.93 4 12 4zm-1 10v6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14h-3z"/>
-                    </svg>
+        <!-- ── Main content ── -->
+        <div class="relative z-10 flex flex-col h-full px-12 py-14">
+
+            <!-- NDC Logo + name -->
+            <div class="flex items-center gap-4 mb-12 animate-slide-left">
+                <div class="relative">
+                    <!-- Glow ring behind logo -->
+                    <div class="absolute inset-0 rounded-full bg-[#6aaa64]/20 blur-md scale-125"></div>
+                    <img src="{% static 'images/ndc-logo.png' %}"
+                         alt="NDC Logo"
+                         class="relative w-20 h-20 object-contain drop-shadow-2xl
+                                animate-float"/>
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-[#c8102e] uppercase tracking-widest">National Democratic Congress</p>
-                    <p class="text-[10px] text-white/50 uppercase tracking-wider">Unity · Stability · Development</p>
+                    <p class="text-[10px] font-bold text-[#c8102e] uppercase tracking-[0.2em]">Republic of Ghana</p>
+                    <h2 class="text-lg font-extrabold text-white leading-tight">National Democratic</h2>
+                    <h2 class="text-lg font-extrabold text-[#95c98d] leading-tight -mt-1">Congress</h2>
                 </div>
             </div>
 
-            <h2 class="text-3xl font-extrabold text-white leading-tight mb-2">
-                NDC Registry
-            </h2>
-            <p class="text-sm text-white/70 mb-6 max-w-xs leading-relaxed">
-                Official membership management system for the NDC Damongo Community — keeping our party strong and organised.
-            </p>
+            <!-- Hero headline -->
+            <div class="flex-1 flex flex-col justify-center animate-slide-left delay-100">
 
-            <!-- Feature list -->
-            <div class="flex flex-col gap-2.5">
-                <div class="flex items-center gap-3">
-                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </span>
-                    <span class="text-sm text-white/75">Member registration &amp; management</span>
+                <!-- Big decorative quote / tagline -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="h-px flex-1 bg-gradient-to-r from-[#c8102e] to-transparent"></div>
+                        <span class="text-[10px] font-bold text-[#95c98d]/60 uppercase tracking-[0.25em]">Official Registry</span>
+                        <div class="h-px flex-1 bg-gradient-to-l from-[#2d5a27] to-transparent"></div>
+                    </div>
+
+                    <h1 class="text-4xl font-extrabold text-white leading-[1.15] mb-3">
+                        NDC<br/>
+                        <span class="text-[#95c98d]">Member</span><br/>
+                        Registry
+                    </h1>
+                    <p class="text-sm text-white/60 leading-relaxed max-w-xs">
+                        Manage party membership records and polling station assignments for the Damongo community, securely and efficiently.
+                    </p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </span>
-                    <span class="text-sm text-white/75">Polling station assignment</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="w-5 h-5 rounded-full bg-[#2d5a27] flex items-center justify-center shrink-0">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </span>
-                    <span class="text-sm text-white/75">Role-based access control</span>
+
+                <!-- Feature checklist -->
+                <div class="flex flex-col gap-3 animate-slide-left delay-200">
+                    {% for item in "123" %}
+                    {% endfor %}
+
+                    <div class="flex items-center gap-3 group">
+                        <div class="w-6 h-6 rounded-full bg-[#2d5a27] border border-[#6aaa64]/40
+                                    flex items-center justify-center shrink-0
+                                    group-hover:bg-[#6aaa64] transition-colors duration-300">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-white/70 group-hover:text-white transition-colors">Member registration &amp; records</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 group">
+                        <div class="w-6 h-6 rounded-full bg-[#2d5a27] border border-[#6aaa64]/40
+                                    flex items-center justify-center shrink-0
+                                    group-hover:bg-[#6aaa64] transition-colors duration-300">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-white/70 group-hover:text-white transition-colors">Polling station assignment</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 group">
+                        <div class="w-6 h-6 rounded-full bg-[#2d5a27] border border-[#6aaa64]/40
+                                    flex items-center justify-center shrink-0
+                                    group-hover:bg-[#6aaa64] transition-colors duration-300">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-white/70 group-hover:text-white transition-colors">Role-based access control</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 group">
+                        <div class="w-6 h-6 rounded-full bg-[#2d5a27] border border-[#6aaa64]/40
+                                    flex items-center justify-center shrink-0
+                                    group-hover:bg-[#6aaa64] transition-colors duration-300">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-white/70 group-hover:text-white transition-colors">Real-time dashboard statistics</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- President caption -->
-            <div class="mt-6 pt-5 border-t border-white/10">
-                <p class="text-xs text-white/40 uppercase tracking-widest">Under the leadership of</p>
-                <p class="text-sm font-bold text-white mt-0.5">H.E. John Dramani Mahama</p>
-                <p class="text-xs text-[#95c98d]/70">President of the Republic of Ghana</p>
+            <!-- Bottom motto strip -->
+            <div class="mt-10 pt-6 border-t border-white/10 animate-fade-in delay-500">
+                <div class="flex items-center gap-3">
+                    <!-- Small logo repeat -->
+                    <img src="{% static 'images/ndc-logo.png' %}"
+                         alt="NDC"
+                         class="w-8 h-8 object-contain opacity-60"/>
+                    <div>
+                        <p class="text-xs font-bold text-white/50 uppercase tracking-widest">NDC Motto</p>
+                        <p class="text-sm font-semibold text-[#95c98d]">Unity · Stability · Development</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ── Right panel — login form ── -->
+    <!-- ══════════════════════════════════════
+         Right panel — login form
+    ══════════════════════════════════════ -->
     <div class="flex-1 flex items-center justify-center px-6 py-12 bg-[#f0f0c8]">
-        <div class="w-full max-w-sm animate-slide-right">
+        <div class="w-full max-w-sm">
 
-            <!-- Mobile header (< lg only) -->
+            <!-- Mobile header (< lg) -->
             <div class="text-center mb-8 lg:hidden animate-fade-up">
-                <div class="w-16 h-16 rounded-2xl bg-[#c8102e] flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.5 2 2 6.27 2 11.5c0 .28.02.55.05.83L3 12h18l.95-.67c.03-.28.05-.55.05-.83C22 6.27 17.5 2 12 2zm0 2c4.07 0 7.44 2.67 8.58 6.33C18.78 8.5 15.57 7 12 7s-6.78 1.5-8.58 3.33C4.56 6.67 7.93 4 12 4zm-1 10v6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14h-3z"/>
-                    </svg>
-                </div>
+                <img src="{% static 'images/ndc-logo.png' %}"
+                     alt="NDC Logo"
+                     class="w-20 h-20 object-contain mx-auto mb-3 drop-shadow-lg animate-float"/>
                 <h1 class="text-xl font-extrabold text-[#2d5a27]">NDC Registry</h1>
                 <p class="text-xs text-[#2d5a27]/50 mt-1 uppercase tracking-widest">National Democratic Congress</p>
             </div>
 
-            <!-- NDC colour strip -->
+            <!-- NDC 4-colour bar -->
             <div class="flex h-1.5 rounded-full overflow-hidden mb-8 animate-fade-up">
                 <div class="flex-1 bg-[#c8102e]"></div>
-                <div class="flex-1 bg-white border-y border-[#95c98d]/30"></div>
+                <div class="flex-1 bg-white border-y border-[#95c98d]/20"></div>
                 <div class="flex-1 bg-[#2d5a27]"></div>
-                <div class="flex-1 bg-black"></div>
+                <div class="flex-1 bg-[#1a1a1a]"></div>
             </div>
 
+            <!-- Greeting -->
             <div class="mb-6 animate-fade-up delay-100">
                 <h2 class="text-2xl font-bold text-[#2d5a27]">Welcome back</h2>
                 <p class="text-sm text-[#2d5a27]/60 mt-1">Sign in to access the NDC Registry</p>
@@ -116,8 +179,8 @@
             <!-- Login card -->
             <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-lg overflow-hidden animate-scale-in delay-150">
 
-                <!-- Card top accent: NDC red -->
-                <div class="h-1 bg-gradient-to-r from-[#c8102e] via-[#c8102e] to-[#2d5a27]"></div>
+                <!-- NDC red top accent -->
+                <div class="h-1.5 bg-gradient-to-r from-[#c8102e] via-[#c8102e]/80 to-[#2d5a27]"></div>
 
                 <form method="post" class="px-6 py-7 space-y-5"
                       x-data="{ loading: false }" @submit="loading = true">
@@ -197,7 +260,7 @@
             </div>
 
             <p class="text-center text-xs text-[#2d5a27]/40 mt-6">
-                &copy; {% now "Y" %} NDC Damongo Community · All rights reserved.
+                &copy; {% now "Y" %} NDC Damongo Constituency· All rights reserved.
             </p>
         </div>
     </div>

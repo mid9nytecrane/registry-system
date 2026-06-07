@@ -1,2 +1,45 @@
 {
+  // ── Prettier: disable for Django/Jinja HTML templates ──────────────────
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.formatOnSave": false
+  },
+  "[django-html]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+  "[jinja-html]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+
+  // ── Keep Prettier active for everything else ────────────────────────────
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ── Python: use the built-in formatter, not Prettier ───────────────────
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": false
+  },
+
+  // ── Associate *.html files in this project as django-html ──────────────
+  "files.associations": {
+    "**/templates/**/*.html": "django-html"
+  },
+
+  // ── Emmet: enable in django-html so tag completion still works ─────────
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  }
 }

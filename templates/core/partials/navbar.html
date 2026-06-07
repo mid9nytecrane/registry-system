@@ -1,15 +1,15 @@
+{% load static %}
 <nav class="w-full bg-[#2d5a27] sticky top-0 z-50 transition-all duration-300">
     <div class="container mx-auto max-w-7xl px-6 py-3.5">
         <div class="flex items-center justify-between">
 
             <!-- Logo & Brand -->
             <a href="{% url 'home' %}" class="flex items-center gap-3 select-none group">
-                <div class="w-10 h-10 rounded-xl bg-[#6aaa64] flex items-center justify-center shrink-0 shadow-md
-                            group-hover:scale-110 group-hover:bg-[#95c98d] transition-all duration-300 animate-pulse-ring">
-                    <!-- Ballot / registry icon -->
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                    </svg>
+                <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 shadow-md
+                            group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
+                    <img src="{% static 'images/ndc-logo.png' %}"
+                         alt="NDC Logo"
+                         class="w-8 h-8 object-contain"/>
                 </div>
                 <div class="flex flex-col leading-none">
                     <span class="text-sm font-extrabold text-[#f0f0c8] tracking-tight group-hover:text-white transition-colors">NDC Registry</span>
@@ -69,11 +69,11 @@
                         Sign Out
                     </a>
                 {% else %}
-                    <a href="#"
+                    {% comment %} <a href="#"
                        class="px-4 py-2 text-sm font-medium text-white bg-[#6aaa64] rounded-lg
                               hover:bg-[#95c98d] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">
                         Sign In
-                    </a>
+                    </a> {% endcomment %}
                 {% endif %}
 
                 <!-- Mobile hamburger -->
