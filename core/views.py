@@ -176,8 +176,8 @@ def station_detail_view(request, pk):
 
 @login_required
 def station_create_view(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Only administrators can add polling stations.')
+    if not request.user.is_superuser:
+        messages.error(request, 'Only master admin can add polling stations.')
         return redirect('station_list')
 
     if request.method == 'POST':

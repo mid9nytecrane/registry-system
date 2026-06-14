@@ -10,6 +10,7 @@
             <h1 class="text-2xl font-bold text-[#2d5a27]">Party Members</h1>
             <p class="text-sm text-[#2d5a27]/60 mt-1">All registered members and their polling stations</p>
         </div>
+        {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'member_create' %}"
            class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-xl
                   hover:bg-[#6aaa64] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md btn-press">
@@ -18,6 +19,7 @@
             </svg>
             Register Member
         </a>
+        {% endif %}
     </div>
 
     <!-- Search & Filter bar -->

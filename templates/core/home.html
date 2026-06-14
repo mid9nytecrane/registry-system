@@ -33,6 +33,7 @@
                     Manage NDC party membership records and polling station assignments for the Damongo community.
                 </p>
                 <div class="flex flex-wrap gap-3 mt-6">
+                    {% if user.is_staff or user.is_superuser %}
                     <a href="{% url 'member_create' %}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f0f0c8] text-[#2d5a27] text-sm font-bold
                               rounded-xl hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg btn-press">
@@ -41,6 +42,7 @@
                         </svg>
                         Register Member
                     </a>
+                    {% endif %}
                     <a href="{% url 'member_list' %}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-transparent text-[#f0f0c8] text-sm font-semibold
                               border border-[#95c98d]/50 rounded-xl hover:bg-[#6aaa64]/20 hover:scale-105 active:scale-95 transition-all duration-200 btn-press">
@@ -138,10 +140,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Quick Actions -->
+        
         <div class="bg-white rounded-2xl shadow-sm border border-[#95c98d]/40 p-6 animate-fade-up delay-300">
             <h2 class="text-xs font-bold text-[#2d5a27]/60 uppercase tracking-wide mb-4">Quick Actions</h2>
             <div class="flex flex-col gap-3">
-
+                {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'member_create' %}"
                    class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-gradient-to-r from-[#2d5a27] to-[#3d7a35]
                           text-[#f0f0c8] text-sm font-semibold hover:scale-[1.02] active:scale-95 transition-all duration-200 shadow-md btn-press">
@@ -152,6 +155,7 @@
                     </div>
                     Register New Member
                 </a>
+                {% endif %}
 
                 <a href="{% url 'member_list' %}"
                    class="flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 border-[#6aaa64]
@@ -175,7 +179,7 @@
                     View Polling Stations
                 </a>
 
-                {% if user.is_staff %}
+                {% if user.is_superuser %}
                 <a href="{% url 'station_create' %}"
                    class="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[#95c98d]
                           text-[#2d5a27] text-sm font-semibold hover:bg-[#95c98d]/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 btn-press">

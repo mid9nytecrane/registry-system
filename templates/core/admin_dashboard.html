@@ -246,7 +246,7 @@
                            class="text-xs text-[#6aaa64] hover:text-[#2d5a27] font-semibold transition-colors">
                             View all →
                         </a>
-                        {% if user.is_staff %}
+                        {% if user.is_superuser %}
                         <a href="{% url 'station_create' %}"
                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2d5a27] text-[#f0f0c8] text-xs
                                   font-semibold rounded-lg hover:bg-[#6aaa64] transition-colors">
@@ -307,6 +307,7 @@
             </div>
             <span class="text-xs font-bold text-[#2d5a27]">Register Member</span>
         </a>
+        {% if user.is_superuser %}
         <a href="{% url 'station_create' %}"
            class="flex items-center gap-2.5 p-4 bg-white rounded-2xl border border-[#95c98d]/40
                   hover:border-[#6aaa64] hover:shadow-md card-hover transition-all">
@@ -317,6 +318,7 @@
             </div>
             <span class="text-xs font-bold text-[#2d5a27]">Add Station</span>
         </a>
+        {% endif %}
         <a href="{% url 'member_list' %}"
            class="flex items-center gap-2.5 p-4 bg-white rounded-2xl border border-[#95c98d]/40
                   hover:border-[#6aaa64] hover:shadow-md card-hover transition-all">
