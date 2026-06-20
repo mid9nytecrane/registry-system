@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
+from django.http import HttpResponse
 
 from .models import PartyMember, PollingStation
 from .forms import PartyMemberForm
+
+from core.admin import PartyMemberResource, PollingStationResource
 
 
 # ─────────────────────────────────────────
@@ -168,6 +171,7 @@ def station_list_view(request):
 def station_detail_view(request, pk):
     station = get_object_or_404(PollingStation, pk=pk)
     members = station.members.order_by('last_name', 'first_name')
+    
     return render(request, 'core/station_detail.html', {
         'station': station,
         'members': members,
@@ -307,3 +311,15 @@ def admin_user_delete_view(request, user_id):
     user.delete()
     messages.success(request, f'User "{name}" has been deleted.')
     return redirect('admin_dashboard')
+
+
+
+#exporting data
+@login_required
+def export_data(request,pk):
+    station = get_object_or_404(PollingStation, pk=pk)
+    queryset = PartyMember.objects.filter(polling_station=station)
+    dataset = PartyMemberResource().export(queryset=queryset)
+    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f"attachment; filename='members_{station.name}.xlsx"
+    return response

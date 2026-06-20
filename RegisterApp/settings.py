@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     #django apps
     'core',
 
-    #third-party
+    #external app or third-party
     'import_export',
 ]
 
