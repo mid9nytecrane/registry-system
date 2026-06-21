@@ -2,7 +2,109 @@
 {% block title %}Polling Stations — Political Registry{% endblock %}
 
 {% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
 
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-up">
+        <div>
+            <h1 class="text-2xl font-bold text-[#2d5a27]">Electoral Areas</h1>
+            <p class="text-sm text-[#2d5a27]/60 mt-1">All registered electoral areas and their polling station counts</p>
+        </div>
+        <!-- create electoral area button-->
+        {% if user.is_superuser %}
+        <a href="{% url 'area_create'%}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-xl
+                  hover:bg-[#6aaa64] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md btn-press">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Electoral Area
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Search & Filter bar -->
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3 animate-fade-up delay-100 shadow-sm">
+        <form method="get" class="flex flex-col sm:flex-row gap-3 w-full">
+        <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d5a27]/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+            </svg>
+            <input type="text" name="q" value="{{ q }}" placeholder="Search by name or location"
+                   class="w-full pl-9 pr-4 py-2 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+        </div>
+        
+        <button type="submit"
+                class="px-4 py-2 bg-[#2d5a27] text-[#f0f0c8] text-sm font-semibold rounded-lg hover:bg-[#6aaa64] transition-colors">
+            Search
+        </button>
+        </form>
+    </div>
+
+    {% if electoral_areas %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for area in electoral_areas %}
+        <div class="bg-white border border-red-800/20 rounded-2xl overflow-hidden shadow-sm card-hover animate-fade-up"
+            style="animation-delay: {{ forloop.counter0 }}00ms">
+
+            <!-- NDC tricolour top bar -->
+            <div class="h-1" style="background: linear-gradient(to right, #c0392b, #f4c430, #198A19);"></div>
+
+            <div class="p-5">
+
+                <!-- Electoral area name + icon -->
+                <div class="flex items-start gap-3 mb-4">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                        style="background-color: #c0392b;">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold leading-tight" style="color: #8b1a1a;">{{ area.name | upper }} </h3>
+                        <p class="text-xs mt-0.5 text-gray-400">{{ area.location|default:"Location not set" }}</p>
+                        <!-- BUG 1 FIX: was station.location, changed to area.location -->
+                    </div>
+                </div>
+
+                <!-- Member count pill -->
+                <div class="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-4"
+                    style="background-color: #fff8e1; border: 0.5px solid #f4c43066;">
+                    <svg class="w-4 h-4" style="color: #b8860b;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="text-sm font-bold" style="color: #7a5800;">
+                        {{ area.station_count }} polling station{{ area.station_count|pluralize }}
+                    </span>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex items-center justify-between pt-2.5 border-t border-gray-100">
+                    <a href="{% url 'area_detail' area.pk%}"
+                    class="text-xs font-semibold flex items-center gap-1 transition-colors"
+                    style="color: #c0392b;"
+                    onmouseover="this.style.color='#8b1a1a'" onmouseout="this.style.color='#c0392b'">
+                        View Area
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    {% if user.is_staff or user.is_superuser %}
+                    <a href="#"
+                    class="text-xs text-gray-400 hover:text-red-700 transition-colors">Edit</a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}  <!-- BUG 2 FIX: endfor was outside the card div, now correctly after it -->
+    </div>
+
+{% else %}
+<div class="text-center py-16 text-gray-400 text-sm">No electoral areas found.</div>
+{% endif %}
+
+</div>
 
 
 

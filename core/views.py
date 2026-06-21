@@ -21,6 +21,9 @@ from openpyxl.utils import get_column_letter
 #  Auth
 # ─────────────────────────────────────────
 
+def is_admin(user):
+    return user.is_staff
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -235,21 +238,59 @@ def station_edit_view(request, pk):
 # ─────────────────────────────────────────
 @login_required
 def electoral_area_list_view(request):
-    electoral_area = ElectoralArea.objects.all()
-
+    query = request.GET.get('q', '').strip()
+    electoral_areas = ElectoralArea.objects.all()
+    if query:
+        electoral_areas = electoral_areas.filter(name__icontains=query)
+    
     context = {
-        'electoral_area': electoral_area
+        'electoral_areas': electoral_areas
     }
     return render(request, 'core/area_list.html', context)
 
 
+@login_required
+def electoral_area_create_view(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Only master admin can create electoral area." )
+        return redirect('area_list')
+    
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        if not name:
+            messages.error(request, "Electoral Area name is required")
+        else:
+            area = ElectoralArea.objects.create(
+                name=name,
+                location=request.POST.get('location', '').strip(),
+                constituency=request.POST.get('constituency', '').strip(),
+                description=request.POST.get('description', '').strip(),
+            )
 
+            messages.success(request, f"Electoral Area '{area.name}' is created succesfully.")
+            return redirect('area_detail', pk=area.pk)
+    return render(request, 'core/area_form.html')
+
+
+
+@login_required
+def electoral_area_details_view(request, pk):
+    electoral_area = get_object_or_404(ElectoralArea, pk=pk)
+    stations = electoral_area.stations.order_by('name')
+    print(f"polling stations under {electoral_area}: {stations}") 
+
+    context = {
+        'stations':stations
+    }
+
+    return render(request, 'core/area_detail.html', context)
 
 # ─────────────────────────────────────────
 #  Admin Dashboard
 # ─────────────────────────────────────────
 
 @login_required
+@user_passes_test(is_admin)
 def admin_dashboard_view(request):
     """Custom admin panel — staff only. Superusers access Django /admin/."""
     if not request.user.is_staff:
@@ -356,6 +397,7 @@ def _build_membership_row(station):
 
 #exporting data
 @login_required
+@user_passes_test(is_admin)
 def export_data(request,pk):
     station = get_object_or_404(PollingStation, pk=pk)
     headers, rows = _build_membership_row(station)

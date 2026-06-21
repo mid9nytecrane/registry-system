@@ -52,6 +52,10 @@ validation_ghana_card = RegexValidator(
 
 class ElectoralArea(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
+    location = models.CharField(max_length=100, blank=True, null=True)
+    constituency = models.CharField(max_length=100,blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
 
     class Meta:
         ordering = ['name']
@@ -59,6 +63,10 @@ class ElectoralArea(models.Model):
     def __str__(self):
         return self.name
 
+     
+    @property
+    def station_count(self):
+        return self.stations.count()
 
 
 
@@ -73,7 +81,7 @@ class PollingStation(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='polling_stations',
+        related_name='stations',
     )
 
     class Meta:

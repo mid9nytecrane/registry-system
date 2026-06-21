@@ -23,7 +23,9 @@ urlpatterns = [
     path('station/<int:pk>/export', views.export_data, name='export_data'),
 
     # Electoral Area
-    path('electoral-Areas/', views.electoral_area_list_view, name='area_list'),
+    path('electoral-areas/', views.electoral_area_list_view, name='area_list'),
+    path('electoral-area/add/',views.electoral_area_create_view,name='area_create'),
+    path('electoral-area/<int:pk>/', views.electoral_area_details_view, name='area_detail'),
 
     # Admin Dashboard (staff only — NOT the Django /admin/ panel)
     path('admin-panel/', views.admin_dashboard_view, name='admin_dashboard'),
