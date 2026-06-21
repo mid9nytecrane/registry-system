@@ -48,7 +48,16 @@ validation_ghana_card = RegexValidator(
     code='Invalid_ghana_card'
 )
 
-    
+
+
+class ElectoralArea(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 
@@ -59,6 +68,13 @@ class PollingStation(models.Model):
     constituency = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    electoral_area = models.ForeignKey(
+        ElectoralArea,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='polling_stations',
+    )
 
     class Meta:
         ordering = ['name']

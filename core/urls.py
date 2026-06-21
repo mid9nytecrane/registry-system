@@ -22,6 +22,9 @@ urlpatterns = [
     path('stations/<int:pk>/edit/', views.station_edit_view, name='station_edit'),
     path('station/<int:pk>/export', views.export_data, name='export_data'),
 
+    # Electoral Area
+    path('electoral-Areas/', views.electoral_area_list_view, name='area_list'),
+
     # Admin Dashboard (staff only — NOT the Django /admin/ panel)
     path('admin-panel/', views.admin_dashboard_view, name='admin_dashboard'),
     path('admin-panel/users/<int:user_id>/toggle/', views.admin_user_toggle_view, name='admin_user_toggle'),

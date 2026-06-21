@@ -6,10 +6,15 @@ from django.utils import timezone
 from django.db.models import Q
 from django.http import HttpResponse
 
-from .models import PartyMember, PollingStation
+from .models import PartyMember, PollingStation,ElectoralArea
 from .forms import PartyMemberForm
 
-from core.admin import PartyMemberResource, PollingStationResource
+from core.resource import PartyMemberResource
+
+import io 
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 
 
 # ─────────────────────────────────────────
@@ -226,6 +231,21 @@ def station_edit_view(request, pk):
 
 
 # ─────────────────────────────────────────
+#  Electoral Areas
+# ─────────────────────────────────────────
+@login_required
+def electoral_area_list_view(request):
+    electoral_area = ElectoralArea.objects.all()
+
+    context = {
+        'electoral_area': electoral_area
+    }
+    return render(request, 'core/area_list.html', context)
+
+
+
+
+# ─────────────────────────────────────────
 #  Admin Dashboard
 # ─────────────────────────────────────────
 
@@ -313,13 +333,118 @@ def admin_user_delete_view(request, user_id):
     return redirect('admin_dashboard')
 
 
+# helpers for exporting data
+def _build_membership_row(station):
+    members_per_station = PartyMember.objects.filter(polling_station=station)
+    headers = ['#', 'First Name', 'Middle Name', 'Last Name', 'Party ID', 'Voters ID', 'Phone']
+
+    rows = []
+
+    for i, member in enumerate(members_per_station, start=1):
+        rows.append([
+            i,
+            member.first_name,
+            member.middle_name or '-',
+            member.last_name,
+            member.member_id,
+            member.voters_id,
+            member.phone
+        ])
+
+    return headers,rows
+
 
 #exporting data
 @login_required
 def export_data(request,pk):
     station = get_object_or_404(PollingStation, pk=pk)
+    headers, rows = _build_membership_row(station)
     queryset = PartyMember.objects.filter(polling_station=station)
     dataset = PartyMemberResource().export(queryset=queryset)
-    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = f"attachment; filename='members_{station.name}.xlsx"
+
+    #---------------------------------------------
+    # Styling exported Excel Sheet
+    #----------------------------------------------
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"{station.name} Members"
+
+    # ---- color palette -------------------------
+    green       = "198A19"
+    white       = "FFFFFF"
+
+    #3. Style definitions
+    header_font    = Font(name='Arial',bold=True, color="FFFFFF", size=11)
+    header_fill    = PatternFill(fill_type="solid", fgColor="2d5a27")
+    header_align   = Alignment(horizontal="center", vertical="center")
+    data_align     = Alignment(horizontal="left", vertical="center")
+    stripe_fill    = PatternFill(fill_type="solid", fgColor="EAF4E8")
+    thin           = Side(style="thin", color="CCCCCC")
+    border         = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    # ----------- title block -------------
+    ws.merge_cells('A1:G1')
+    title_cell = ws['A1']
+    title_cell.value = f"{station.name} Membership Database"
+    title_cell.font = Font(name='Times New Roman', bold=True, size=16, color=white)
+    title_cell.fill = PatternFill("solid", fgColor=green)
+    title_cell.alignment = Alignment(horizontal="center", vertical="center")
+    ws.row_dimensions[1].height = 32
+
+    ws.append([]) #blank space
+
+    # Define columns: (header label)
+    # columns = [
+    #     ("First Name", lambda m: m.first_name),
+    #     ("Middle Name", lambda m: m.middle_name),
+    #     ("Last Name", lambda m: m.last_name),
+    #     ("Party ID", lambda m: m.member_id),
+    #     ("Voters ID", lambda m: m.voters_id),
+    #     ("Phone", lambda m: m.phone)
+    # ]
+
+    # ----------- header row (row 3) -------------------
+    ws.append(headers)
+    header_row = ws[3]
+
+    for cell in header_row:
+        cell.font = header_font
+        cell.fill = header_fill 
+        cell.alignment = header_align
+    ws.row_dimensions[3].height=22
+    
+
+    #----------- data row (starting from row 4) ----------------
+    for row_idx, row_data in enumerate(rows, start=4):
+        ws.append(row_data)
+        for col_idx, cell in enumerate(ws[row_idx], start=1):
+            cell.alignment = data_align
+            cell.border = border 
+            if row_idx % 2 == 0:
+                cell.fill = stripe_fill
+
+     # ----------- auto-fit column widths ---------
+    for col_idx in range(1, len(headers) + 1):
+        col_letter = get_column_letter(col_idx)
+        max_length = len(headers[col_idx - 1])
+        for row in ws.iter_rows(min_row=4, min_col=col_idx, max_col=col_idx):
+            for cell in row:
+                max_length = max(max_length, len(str(cell.value or "")))
+        ws.column_dimensions[col_letter].width = max_length + 4
+
+    # freeze the header row i.e like static navbar type sh!!t 
+    ws.freeze_panes = "A4"
+
+    #save and send 
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    
+    response = HttpResponse(
+        buffer.getvalue(), 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+    response['Content-Disposition'] = f"attachment; filename='{station.name}_members.xlsx"
     return response

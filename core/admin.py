@@ -3,7 +3,7 @@ from import_export import resources, fields
 from import_export.admin import ExportActionMixin, ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
 
-from .models import PartyMember, PollingStation
+from .models import PartyMember, PollingStation,ElectoralArea
 
 
 # ── Resource definitions (controls which fields are exported/imported) ──
@@ -36,6 +36,8 @@ class PartyMemberResource(resources.ModelResource):
 
 
 # ── Admin registrations ──
+
+admin.site.register(ElectoralArea)
 
 @admin.register(PollingStation)
 class PollingStationAdmin(ImportExportModelAdmin, ExportActionMixin):

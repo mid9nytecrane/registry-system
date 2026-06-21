@@ -26,6 +26,11 @@
                           {% if url_name == 'home' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
                     Dashboard
                 </a>
+                <a href="{% url 'area_list'%}"
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          {% if url_name == 'area_list' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
+                    Electoral Areas
+                </a>
                 <a href="{% url 'station_list' %}"
                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                           {% if url_name == 'station_list' %}bg-[#6aaa64]/30 text-[#f0f0c8]{% else %}text-[#95c98d] hover:text-[#f0f0c8] hover:bg-[#6aaa64]/20{% endif %}">
