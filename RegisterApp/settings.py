@@ -35,8 +35,10 @@ else:
 
 
 
-
-ALLOWED_HOSTS = ['*']
+if ENVIRONMENT == 'development':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'now.sh']
 
 
 # ── Installed apps ───────────────────────────────────────────────────────────
