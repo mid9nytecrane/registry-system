@@ -5,16 +5,21 @@ Django settings for RegisterApp project.
 from pathlib import Path
 import os
 from environ import Env
+import dj_database_url
 
 
-env = Env()
-Env.read_env()  
 
 
-ENVIRONMENT = env('ENVIRONMENT', default='production')
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+env = Env()
+#Env.read_env()  
+Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+ENVIRONMENT = env('ENVIRONMENT', default='production')
 
 # ── Security ────────────────────────────────────────────────────────────────
 # Reads SECRET_KEY from .env; falls back to the insecure dev key if missing
@@ -93,6 +98,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+POSTGRES_LOCALLY = False # True if want to access postgres data while running locally
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == True:
+    DATABASES['default'] = dj_database_url.parse(env("DATABASE_URL"))
+
 
 # Production database (uncomment when deploying):
 # import dj_database_url
