@@ -1,5 +1,5 @@
 from django import forms
-from .models import PartyMember
+from .models import PartyMember,PollingStation 
 
 # Shared Tailwind classes per widget type
 _text_cls = (
@@ -11,6 +11,10 @@ _select_cls = (
     'w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg '
     'focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] '
     'transition-all duration-200 hover:border-[#6aaa64]'
+)
+
+_textarea_cls = (
+    'w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] resize-none'
 )
 _mono_cls = _text_cls + ' font-mono'
 
@@ -89,3 +93,45 @@ class PartyMemberForm(forms.ModelForm):
         self.fields['date_registered'].required = False
         # Add empty label to the station dropdown
         self.fields['polling_station'].empty_label = 'Select a station…'
+
+# polling station
+class PollingStationForm(forms.ModelForm):
+    class Meta:
+        model = PollingStation
+        exclude = ["created_at"]
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': _text_cls,
+                'placeholder': 'Town park'
+            }),
+
+            'location': forms.TextInput(attrs={
+                'class': _text_cls,
+                'placeholder': 'Langbanto'
+            }),
+
+            'constituency': forms.TextInput(attrs={
+                'class': _text_cls,
+                'placeholder': 'Damongo Constituency'
+            }),
+
+            'description' : forms.Textarea(attrs={
+                'class': _textarea_cls
+            }),
+            
+            'electoral_area': forms.Select(attrs={
+                'class': _select_cls,
+                'id': 'id_electoral_area',
+            })
+
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].required = True 
+        self.fields['location'].required = False 
+        self.fields['constituency'].required = True 
+        self.fields['description'].required = False 
+        self.fields['electoral_area'].empty_label = 'Select an Electoral area'
+    

@@ -41,5 +41,7 @@
   // ── Emmet: enable in django-html so tag completion still works ─────────
   "emmet.includeLanguages": {
     "django-html": "html"
-  }
+  },
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python.analysis.autoImportCompletions": true
 }

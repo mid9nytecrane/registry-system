@@ -26,6 +26,7 @@ urlpatterns = [
     path('electoral-areas/', views.electoral_area_list_view, name='area_list'),
     path('electoral-area/add/',views.electoral_area_create_view,name='area_create'),
     path('electoral-area/<int:pk>/', views.electoral_area_details_view, name='area_detail'),
+    path('electoral-area/<int:pk>/edit', views.electoral_area_edit_view, name='area_edit'),
 
     # Admin Dashboard (staff only — NOT the Django /admin/ panel)
     path('admin-panel/', views.admin_dashboard_view, name='admin_dashboard'),

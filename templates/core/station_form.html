@@ -1,9 +1,10 @@
 {% extends "core/base.html" %}
-{% block title %}{% if station %}Edit Station{% else %}Add Station{% endif %} — Political Registry{% endblock %}
+{% block title %}{% if station %}Edit Station{% else %}Add Station{% endif %} — NDC Registry{% endblock %}
 
 {% block content %}
 <div class="max-w-xl mx-auto px-6 py-10">
 
+    <!-- Breadcrumb -->
     <nav class="text-xs text-[#2d5a27]/50 mb-6 flex items-center gap-1.5">
         <a href="{% url 'home' %}" class="hover:text-[#6aaa64]">Dashboard</a>
         <span>/</span>
@@ -12,59 +13,207 @@
         <span class="text-[#2d5a27]">{% if station %}Edit{% else %}Add{% endif %}</span>
     </nav>
 
-    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm overflow-hidden animate-scale-in">
+    <div class="bg-white border border-[#95c98d]/40 rounded-2xl shadow-sm overflow-hidden animate-scale-in"
+         x-data="stationForm({{ areas_json }})" x-init="init()">
 
+        <!-- Header -->
         <div class="bg-gradient-to-r from-[#2d5a27] to-[#3d7a35] px-6 py-6">
             <h1 class="text-lg font-bold text-[#f0f0c8]">
                 {% if station %}Edit Polling Station{% else %}Add Polling Station{% endif %}
             </h1>
             <p class="text-xs text-[#95c98d] mt-1">
-                {% if station %}Update details for {{ station.name }}{% else %}Add a new polling station to the registry{% endif %}
+                {% if station %}
+                    Update details for {{ station.name }}
+                {% else %}
+                    Select an electoral area — location and constituency will fill automatically
+                {% endif %}
             </p>
         </div>
 
         <form method="post" class="px-6 py-6 space-y-5">
             {% csrf_token %}
 
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+            <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- ── Electoral Area ── -->
             <div>
-                <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Station Name <span class="text-red-500">*</span></label>
-                <input type="text" name="name" value="{{ station.name|default:'' }}" required
-                       placeholder="e.g. Damongo Community Centre"
-                       class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide mb-1.5">
+                    Electoral Area
+                </label>
+                <!-- Wrap select so we can attach @change -->
+                <div @change="onAreaChange($event.target.value)">
+                    {{ form.electoral_area }}
+                </div>
+                {% if form.electoral_area.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.electoral_area.errors.0 }}</p>
+                {% endif %}
+
+                <!-- Auto-fill badge — shown when a field was populated from the area -->
+                <div x-show="autofilled" x-cloak x-transition
+                     class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                            bg-[#6aaa64]/15 border border-[#6aaa64]/40 text-[11px] font-semibold text-[#2d5a27]">
+                    <svg class="w-3 h-3 text-[#6aaa64]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Fields auto-filled from electoral area · you can edit them below
+                </div>
             </div>
 
+            <!-- ── Station Name ── -->
             <div>
-                <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Location / Area</label>
-                <input type="text" name="location" value="{{ station.location|default:'' }}"
-                       placeholder="e.g. Damongo Central, West Gonja"
-                       class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide mb-1.5">
+                    Station Name <span class="text-red-500">*</span>
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.name.errors.0 }}</p>
+                {% endif %}
             </div>
 
+            <!-- ── Location ── -->
             <div>
-                <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Constituency</label>
-                <input type="text" name="constituency" value="{{ station.constituency|default:'' }}"
-                       placeholder="e.g. Damongo Constituency"
-                       class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8]"/>
+                <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide mb-1.5">
+                    Location / Area
+                    <!-- Animated "auto-filled" indicator beside the label -->
+                    <span x-show="fields.location" x-cloak
+                          class="ml-2 text-[10px] font-semibold text-[#6aaa64] normal-case tracking-normal">
+                        ✓ from area
+                    </span>
+                </label>
+                <div class="relative">
+                    {{ form.location }}
+                    <!-- Clear button -->
+                    <button type="button" x-show="fields.location" x-cloak
+                            @click="clearField('location', '{{ form.location.html_name }}')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#2d5a27]/30
+                                   hover:text-red-400 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
+            <!-- ── Constituency ── -->
             <div>
-                <label class="block text-xs font-semibold text-[#2d5a27]/70 mb-1.5">Description / Notes</label>
-                <textarea name="description" rows="3"
-                          placeholder="Any additional information about this station…"
-                          class="w-full px-3 py-2.5 text-sm border border-[#95c98d]/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6aaa64]/40 bg-[#f0f0c8] resize-none">{{ station.description|default:'' }}</textarea>
+                <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide mb-1.5">
+                    Constituency <span class="text-red-500">*</span>
+                    <span x-show="fields.constituency" x-cloak
+                          class="ml-2 text-[10px] font-semibold text-[#6aaa64] normal-case tracking-normal">
+                        ✓ from area
+                    </span>
+                </label>
+                <div class="relative">
+                    {{ form.constituency }}
+                    <button type="button" x-show="fields.constituency" x-cloak
+                            @click="clearField('constituency', '{{ form.constituency.html_name }}')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#2d5a27]/30
+                                   hover:text-red-400 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                {% if form.constituency.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.constituency.errors.0 }}</p>
+                {% endif %}
             </div>
 
+            <!-- ── Description ── -->
+            <div>
+                <label class="block text-xs font-bold text-[#2d5a27]/70 uppercase tracking-wide mb-1.5">
+                    Description / Notes
+                    <span x-show="fields.description" x-cloak
+                          class="ml-2 text-[10px] font-semibold text-[#6aaa64] normal-case tracking-normal">
+                        ✓ from area
+                    </span>
+                </label>
+                {{ form.description }}
+            </div>
+
+            <!-- ── Actions ── -->
             <div class="flex items-center justify-between pt-4 border-t border-[#95c98d]/30">
-                <a href="{% url 'station_list' %}" class="text-sm text-[#2d5a27]/50 hover:text-[#6aaa64] transition-colors">← Cancel</a>
+                <a href="{% url 'station_list' %}" class="text-sm text-[#2d5a27]/50 hover:text-[#6aaa64] transition-colors">
+                    ← Cancel
+                </a>
                 <button type="submit"
                         class="px-6 py-2.5 bg-[#2d5a27] text-[#f0f0c8] text-sm font-bold rounded-xl
-                               hover:bg-[#6aaa64] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md btn-press">
+                               hover:bg-[#6aaa64] hover:scale-105 active:scale-95
+                               transition-all duration-200 shadow-md btn-press">
                     {% if station %}Save Changes{% else %}Add Station{% endif %}
                 </button>
             </div>
 
         </form>
     </div>
-
 </div>
+
+<!-- Alpine component -->
+<script>
+function stationForm(areasData) {
+    return {
+        areasData: areasData,
+        autofilled: false,
+        fields: { location: false, constituency: false, description: false },
+
+        init() {
+            // On edit: if an area is already selected, mark existing auto-fill state
+            // but don't overwrite values the user already saved
+            const sel = document.getElementById('id_electoral_area');
+            if (sel && sel.value && areasData[sel.value]) {
+                // Only flag as autofilled if the current values match the area data
+                const area = areasData[sel.value];
+                const loc  = document.querySelector('[name="location"]');
+                const con  = document.querySelector('[name="constituency"]');
+                if (loc && loc.value && loc.value === area.location)  this.fields.location = true;
+                if (con && con.value && con.value === area.constituency) this.fields.constituency = true;
+                this.autofilled = this.fields.location || this.fields.constituency;
+            }
+        },
+
+        onAreaChange(areaId) {
+            if (!areaId || !this.areasData[areaId]) {
+                // Cleared — reset flags but don't wipe user edits
+                this.autofilled = false;
+                this.fields = { location: false, constituency: false, description: false };
+                return;
+            }
+
+            const area = this.areasData[areaId];
+
+            // Auto-fill each field if it is currently empty OR was previously auto-filled
+            const fill = (name, value, flagKey) => {
+                const el = document.querySelector(`[name="${name}"]`);
+                if (!el) return;
+                if (!el.value || this.fields[flagKey]) {
+                    el.value = value;
+                    // Highlight the field briefly
+                    el.classList.add('ring-2', 'ring-[#6aaa64]/60', 'border-[#6aaa64]');
+                    setTimeout(() => el.classList.remove('ring-2', 'ring-[#6aaa64]/60', 'border-[#6aaa64]'), 1800);
+                    this.fields[flagKey] = !!value;
+                }
+            };
+
+            fill('location',     area.location,     'location');
+            fill('constituency', area.constituency,  'constituency');
+            fill('description',  area.description,   'description');
+
+            this.autofilled = this.fields.location || this.fields.constituency || this.fields.description;
+        },
+
+        clearField(flagKey, fieldName) {
+            const el = document.querySelector(`[name="${fieldName}"]`);
+            if (el) el.value = '';
+            this.fields[flagKey] = false;
+            this.autofilled = Object.values(this.fields).some(Boolean);
+        }
+    };
+}
+</script>
+
 {% endblock content %}

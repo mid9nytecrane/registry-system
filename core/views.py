@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 
 from .models import PartyMember, PollingStation,ElectoralArea
-from .forms import PartyMemberForm
+from .forms import PartyMemberForm,PollingStationForm
 
 from core.resource import PartyMemberResource
 
@@ -185,28 +185,41 @@ def station_detail_view(request, pk):
         'members': members,
     })
 
-
 @login_required
 def station_create_view(request):
-    if not request.user.is_superuser:
-        messages.error(request, 'Only master admin can add polling stations.')
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'Only admins can add polling stations.')
         return redirect('station_list')
 
+    initial = {}
+    preselected = request.GET.get('electoral_area', '')
+    if preselected:
+        initial['electoral_area'] = preselected
+
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        if not name:
-            messages.error(request, 'Station name is required.')
-        else:
-            station = PollingStation.objects.create(
-                name=name,
-                location=request.POST.get('location', '').strip(),
-                constituency=request.POST.get('constituency', '').strip(),
-                description=request.POST.get('description', '').strip(),
-            )
+        form = PollingStationForm(request.POST)
+        if form.is_valid():
+            station = form.save()
             messages.success(request, f'Polling station "{station.name}" added successfully.')
             return redirect('station_detail', pk=station.pk)
+    else:
+        form = PollingStationForm(initial=initial)
 
-    return render(request, 'core/station_form.html')
+    # Pass all electoral area data as JSON for JS auto-population
+    import json
+    areas_data = {
+        str(area.pk): {
+            'location':     area.location or '',
+            'constituency': area.constituency or '',
+            'description':  area.description or '',
+        }
+        for area in ElectoralArea.objects.all()
+    }
+
+    return render(request, 'core/station_form.html', {
+        'form': form,
+        'areas_json': json.dumps(areas_data),
+    })
 
 
 @login_required
@@ -218,19 +231,29 @@ def station_edit_view(request, pk):
         return redirect('station_detail', pk=pk)
 
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        if not name:
-            messages.error(request, 'Station name is required.')
-        else:
-            station.name = name
-            station.location = request.POST.get('location', '').strip()
-            station.constituency = request.POST.get('constituency', '').strip()
-            station.description = request.POST.get('description', '').strip()
-            station.save()
+        form = PollingStationForm(request.POST, instance=station)
+        if form.is_valid():
+            form.save()
             messages.success(request, f'Station "{station.name}" updated successfully.')
             return redirect('station_detail', pk=station.pk)
+    else:
+        form = PollingStationForm(instance=station)
 
-    return render(request, 'core/station_form.html', {'station': station})
+    import json
+    areas_data = {
+        str(area.pk): {
+            'location':     area.location or '',
+            'constituency': area.constituency or '',
+            'description':  area.description or '',
+        }
+        for area in ElectoralArea.objects.all()
+    }
+
+    return render(request, 'core/station_form.html', {
+        'form':       form,
+        'station':    station,
+        'areas_json': json.dumps(areas_data),
+    })
 
 
 # ─────────────────────────────────────────
@@ -284,6 +307,35 @@ def electoral_area_details_view(request, pk):
     }
 
     return render(request, 'core/area_detail.html', context)
+
+
+
+@login_required  # BUG 1: missing @ decorator
+def electoral_area_edit_view(request, pk):
+    area = get_object_or_404(ElectoralArea, pk=pk)
+
+    if not request.user.is_superuser:
+        messages.error(request, 'Only administrators can edit electoral areas.')
+        return redirect('area_list')  # BUG 2: area_list takes no pk argument
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        if not name:
+            messages.error(request, 'Electoral Area name is required.')
+        else:
+            area.name = name
+            area.location = request.POST.get('location', '').strip()
+            area.constituency = request.POST.get('constituency', '').strip()
+            area.description = request.POST.get('description', '').strip()
+            area.save()
+            messages.success(request, f'Electoral Area "{area.name}" updated successfully.')
+            return redirect('area_list')
+
+    # BUG 3: render was missing the context — area was never passed to the template
+    # so {{ area.name }}, {{ area.location }} etc. all rendered empty
+    return render(request, 'core/area_form.html', {'area': area})
+
+
 
 # ─────────────────────────────────────────
 #  Admin Dashboard

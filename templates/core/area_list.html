@@ -90,7 +90,7 @@
                         </svg>
                     </a>
                     {% if user.is_staff or user.is_superuser %}
-                    <a href="#"
+                    <a href="{% url 'area_edit' area.pk%}"
                     class="text-xs text-gray-400 hover:text-red-700 transition-colors">Edit</a>
                     {% endif %}
                 </div>

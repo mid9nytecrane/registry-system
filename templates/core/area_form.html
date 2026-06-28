@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% block title %}{% if station %}Edit Station{% else %}Add Station{% endif %} — Political Registry{% endblock %}
+{% block title %}{% if area %}Edit Station{% else %}Add Station{% endif %} — Political Registry{% endblock %}
 
 {% block content %}
 <div class="max-w-xl mx-auto px-6 py-10">
@@ -8,9 +8,9 @@
     <nav class="text-xs mb-6 flex items-center gap-1.5" style="color: #c0392b99;">
         <a href="{% url 'home' %}" class="hover:text-red-700 transition-colors">Dashboard</a>
         <span>/</span>
-        <a href="{% url 'station_list' %}" class="hover:text-red-700 transition-colors">Stations</a>
+        <a href="{% url 'area_list' %}" class="hover:text-red-700 transition-colors">Electoral Areas</a>
         <span>/</span>
-        <span style="color: #8b1a1a;">{% if station %}Edit{% else %}Add{% endif %}</span>
+        <span style="color: #8b1a1a;">{% if area %}Edit{% else %}Add{% endif %}</span>
     </nav>
 
     <div class="bg-white border border-red-800/20 rounded-2xl overflow-hidden shadow-sm animate-scale-in">
@@ -20,10 +20,10 @@
 
         <div class="px-6 py-5" style="background-color: #c0392b;">
             <h1 class="text-base font-bold text-white">
-                {% if station %}Edit Polling Station{% else %}Add Polling Station{% endif %}
+                {% if area %}Edit Electoral Area{% else %}Create Electoral Area{% endif %}
             </h1>
             <p class="text-xs mt-1" style="color: #f5c0bb;">
-                {% if station %}Update details for {{ station.name }}{% else %}Add a new polling station to the registry{% endif %}
+                {% if area %}Update details for {{ area.name }}{% else %}Add a new polling station to the registry{% endif %}
             </p>
         </div>
 
@@ -33,9 +33,9 @@
             <!-- Station Name -->
             <div>
                 <label class="block text-xs font-semibold mb-1.5" style="color: #8b1a1a;">
-                    Station Name <span class="text-red-500">*</span>
+                    Electoral Area Name <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="name" value="{{ station.name|default:'' }}" required
+                <input type="text" name="name" value="{{ area.name|default:'' }}" required
                        placeholder="e.g. Damongo Community Centre"
                        class="w-full px-3 py-2.5 text-sm rounded-lg focus:outline-none focus:ring-2 transition-colors"
                        style="border: 1px solid #f4c43066; background-color: #fff8e1; focus-ring-color: #f4c430;"
@@ -48,7 +48,7 @@
                 <label class="block text-xs font-semibold mb-1.5" style="color: #8b1a1a;">
                     Location / Area
                 </label>
-                <input type="text" name="location" value="{{ station.location|default:'' }}"
+                <input type="text" name="location" value="{{ area.location|default:'' }}"
                        placeholder="e.g. Damongo Central, West Gonja"
                        class="w-full px-3 py-2.5 text-sm rounded-lg transition-colors"
                        style="border: 1px solid #f4c43066; background-color: #fff8e1;"
@@ -61,7 +61,7 @@
                 <label class="block text-xs font-semibold mb-1.5" style="color: #8b1a1a;">
                     Constituency
                 </label>
-                <input type="text" name="constituency" value="{{ station.constituency|default:'' }}"
+                <input type="text" name="constituency" value="{{ area.constituency|default:'' }}"
                        placeholder="e.g. Damongo Constituency"
                        class="w-full px-3 py-2.5 text-sm rounded-lg transition-colors"
                        style="border: 1px solid #f4c43066; background-color: #fff8e1;"
@@ -79,12 +79,12 @@
                           class="w-full px-3 py-2.5 text-sm rounded-lg resize-none transition-colors"
                           style="border: 1px solid #f4c43066; background-color: #fff8e1;"
                           onfocus="this.style.borderColor='#f4c430'; this.style.boxShadow='0 0 0 3px #f4c43033';"
-                          onblur="this.style.borderColor='#f4c43066'; this.style.boxShadow='none';">{{ station.description|default:'' }}</textarea>
+                          onblur="this.style.borderColor='#f4c43066'; this.style.boxShadow='none';">{{ area.description|default:'' }}</textarea>
             </div>
 
             <!-- Footer actions -->
             <div class="flex items-center justify-between pt-4" style="border-top: 1px solid #f4c43044;">
-                <a href="{% url 'station_list' %}"
+                <a href="{% url 'area_list' %}"
                    class="text-xs transition-colors"
                    style="color: #c0392b99;"
                    onmouseover="this.style.color='#8b1a1a'" onmouseout="this.style.color='#c0392b99'">
@@ -95,7 +95,10 @@
                         style="background-color: #c0392b;"
                         onmouseover="this.style.backgroundColor='#8b1a1a';"
                         onmouseout="this.style.backgroundColor='#c0392b';">
-                    {% if station %}Save Changes{% else %}Add Station{% endif %}
+                    <p class="text-xs mt-1" style="color: #f5c0bb;">
+                        {% if area %}Update details for {{ area.name }}{% else %}Add a new electoral area to the registry{% endif %}
+                        <!-- was: "Add a new polling station to the registry" — copy/paste leftover -->
+                    </p>
                 </button>
             </div>
 
