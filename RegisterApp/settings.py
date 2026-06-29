@@ -25,7 +25,7 @@ ENVIRONMENT = env('ENVIRONMENT', default='production')
 # Reads SECRET_KEY from .env; falls back to the insecure dev key if missing
 # so the project still starts without a .env file in development.
 
-SECRET_KEY = "django-insecure-)-i18ot3_-!r_3rr@*jj!qs^g^m^xks%ac#+@x!*v00il4fgn5"
+SECRET_KEY = env('SECRET_KEY')
 
 
 if ENVIRONMENT == 'development':
