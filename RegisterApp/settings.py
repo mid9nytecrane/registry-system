@@ -4,44 +4,30 @@ Django settings for RegisterApp project.
 
 from pathlib import Path
 import os
-from environ import Env
 import dj_database_url
+from environ import Env
 
-
-
-
-
-# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# ── Load .env ─────────────────────────────────────────────────────────────────
 env = Env()
-#Env.read_env()  
 Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-ENVIRONMENT = env('ENVIRONMENT', default='production')
+# ── Environment ───────────────────────────────────────────────────────────────
+ENVIRONMENT = env('ENVIRONMENT', default='development')
+IS_PRODUCTION = ENVIRONMENT == 'production'
 
-# ── Security ────────────────────────────────────────────────────────────────
-# Reads SECRET_KEY from .env; falls back to the insecure dev key if missing
-# so the project still starts without a .env file in development.
-
+# ── Security ──────────────────────────────────────────────────────────────────
 SECRET_KEY = env('SECRET_KEY')
+DEBUG = not IS_PRODUCTION
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', 'localhost'] if IS_PRODUCTION else ['*']
 
+# ── CSRF trusted origins (required for Vercel) ────────────────────────────────
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+]
 
-if ENVIRONMENT == 'development':
-    DEBUG = True
-else:
-    DEBUG = False 
-
-
-
-if ENVIRONMENT == 'development':
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'now.sh']
-
-
-# ── Installed apps ───────────────────────────────────────────────────────────
+# ── Installed apps ────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,19 +35,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',
 
-    # project apps
+    # project
     'core',
 
     # third-party
     'import_export',
+    'whitenoise.runserver_nostatic',   # must come after staticfiles
 ]
 
 # ── Middleware ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # serve static files on Vercel
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,8 +78,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'RegisterApp.wsgi.application'
 
 # ── Database ──────────────────────────────────────────────────────────────────
-# Default: SQLite for development.
-# For production set DATABASE_URL in .env and uncomment the dj-database-url block.
+# Development: SQLite
+# Production:  Neon PostgreSQL via DATABASE_URL in .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -101,16 +87,14 @@ DATABASES = {
     }
 }
 
-POSTGRES_LOCALLY = False # True if want to access postgres data while running locally
-if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == True:
-    DATABASES['default'] = dj_database_url.parse(env("DATABASE_URL"))
-
-
-# Production database (uncomment when deploying):
-# import dj_database_url
-# DATABASE_URL = config('DATABASE_URL', default='')
-# if DATABASE_URL:
-#     DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+DATABASE_URL = env('DATABASE_URL', default='')
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,          # keep connections alive 10 min
+        conn_health_checks=True,   # auto-reconnect if connection drops
+        ssl_require=True,          # Neon requires SSL
+    )
 
 # ── Password validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
@@ -126,18 +110,23 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ── Static & Media files ──────────────────────────────────────────────────────
-STATIC_URL = 'static/'
+# ── Static files ──────────────────────────────────────────────────────────────
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
-MEDIA_URL = 'media/'
+# WhiteNoise: compress + cache static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ── Media files ───────────────────────────────────────────────────────────────
+# Note: Vercel is read-only — media uploads won't persist.
+# Use Cloudinary or an S3 bucket for user-uploaded files in production.
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ── Misc ──────────────────────────────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Auth redirects
-LOGIN_URL = 'login'
+LOGIN_URL          = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
