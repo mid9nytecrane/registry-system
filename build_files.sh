@@ -8,7 +8,7 @@ pip install --break-system-packages -r requirements.txt
 
 
 echo "==> Running database migrations..."
-python manage.py maekemigrations --noinput
+python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
 echo "==> Collecting static files..."
