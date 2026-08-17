@@ -29,6 +29,4 @@ Sphinx==9.1.0
 tblib==3.2.2
 thread==2.0.6
 typing_extensions==4.16.0
-psycopg2-binary==2.9.9
-psycopg2-binary==2.9.9
 PyYAML==6.0.3
