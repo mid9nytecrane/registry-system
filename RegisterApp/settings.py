@@ -6,6 +6,7 @@ from pathlib import Path
 import os
 import dj_database_url
 from environ import Env
+from numpy import True_
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,6 +17,10 @@ Env.read_env(os.path.join(BASE_DIR, '.env'))
 # ── Environment ───────────────────────────────────────────────────────────────
 ENVIRONMENT = env('ENVIRONMENT', default='development')
 IS_PRODUCTION = ENVIRONMENT == 'production'
+if ENVIRONMENT == 'development':
+    DEBUG=True
+else:
+    DEBUG=False
 
 # ── Security ──────────────────────────────────────────────────────────────────
 SECRET_KEY = env('SECRET_KEY')
@@ -87,14 +92,17 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = env('DATABASE_URL', default='')
-if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,          # keep connections alive 10 min
-        conn_health_checks=True,   # auto-reconnect if connection drops
-        ssl_require=True,          # Neon requires SSL
-    )
+NEON_DATABASE_LOCALLY = False #when i want to use hosted database locally
+
+if ENVIRONMENT == 'production' or NEON_DATABASE_LOCALLY == True:
+    DATABASE_URL = env('DATABASE_URL', default='')
+    if DATABASE_URL:
+        DATABASES['default'] = dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,          # keep connections alive 10 min
+            conn_health_checks=True,   # auto-reconnect if connection drops
+            ssl_require=True,          # Neon requires SSL
+        )
 
 # ── Password validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
