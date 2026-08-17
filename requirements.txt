@@ -19,7 +19,6 @@ openpyxl==3.1.5
 oracledb==4.0.2
 Pillow==12.3.0
 psycopg==3.3.2
-psycopg2==2.9.10
 psycopg2_binary==2.9.12
 psycopg_pool==3.3.1
 pylibmc==1.6.3
@@ -34,3 +33,5 @@ tblib==3.2.2
 thread==2.0.6
 typing_extensions==4.16.0
 xmlrpclib==1.0.1
+psycopg2-binary==2.9.9
+psycopg2-binary==2.9.9
