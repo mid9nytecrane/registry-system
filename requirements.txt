@@ -1,32 +1,36 @@
-attr==0.3.2
-backports.statistics==0.1.0
-bpython==0.26
-colorama==0.4.6
-ConfigParser==7.2.0
-cryptography==50.0.0
-django_environ==0.12.0
-docutils==0.23
-filelock==3.32.3
-h2==4.4.1
-HTMLParser==0.0.2
-ipdb==0.13.13
-ipython==9.16.1
-ipywidgets==8.1.8
-isort==8.0.1
-keyring==25.7.0
-numpy==2.5.2
+# ── Core framework ────────────────────────────────────────────────────────────
+Django==5.2.4
+asgiref==3.9.1
+sqlparse==0.5.3
+
+# ── Database ──────────────────────────────────────────────────────────────────
+dj-database-url==3.0.1
+psycopg2-binary==2.9.10      # pre-compiled — no pg_config needed on Vercel
+
+# ── Environment & config ──────────────────────────────────────────────────────
+django-environ==0.12.0
+python-decouple==3.8
+python-dotenv==1.2.2
+
+# ── Static files (Vercel / production) ───────────────────────────────────────
+whitenoise==6.11.0
+
+# ── WSGI server ───────────────────────────────────────────────────────────────
+gunicorn==23.0.0
+
+# ── Import / Export ───────────────────────────────────────────────────────────
+django-import-export==4.4.1
+diff-match-patch==20241021
+tablib==3.9.0
 openpyxl==3.1.5
-oracledb==4.0.2
-Pillow==12.3.0
-psycopg==3.3.2
-psycopg2_binary==2.9.12
-psycopg_pool==3.3.1
-pylibmc==1.6.3
-pymemcache==4.0.0
-pyOpenSSL==26.4.0
-pywatchman==4.0.0
-Sphinx==9.1.0
-tblib==3.2.2
-thread==2.0.6
-typing_extensions==4.16.0
-PyYAML==6.0.3
+et_xmlfile==2.0.0
+xlrd==2.0.2
+
+# ── Excel export ──────────────────────────────────────────────────────────────
+Pillow==10.4.0
+
+# ── Timezone data ─────────────────────────────────────────────────────────────
+tzdata==2025.2
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+typing_extensions==4.14.1
