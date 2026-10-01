@@ -180,6 +180,7 @@ def station_detail_view(request, pk):
     station = get_object_or_404(PollingStation, pk=pk)
     members = station.members.order_by('last_name', 'first_name')
     
+    
     return render(request, 'core/station_detail.html', {
         'station': station,
         'members': members,
